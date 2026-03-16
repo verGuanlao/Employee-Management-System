@@ -27,4 +27,8 @@ public class EmployeeDTO {
         this.department = employee.getDepartment().getDepartmentName();
         this.salary = employee.getEmployeeSalary();
     }
+
+    public boolean areFieldsMissing() {
+        return name.isEmpty() || birthDate == null || salary == null || department.isEmpty();
+    }
 }
