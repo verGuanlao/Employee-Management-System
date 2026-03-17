@@ -62,24 +62,4 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Double calculateAverageAgeByDepartmentAndAgeRange(@Param("deptId") Long deptId,
                                                       @Param("minBirthDate") LocalDate minBirthDate,
                                                       @Param("maxBirthDate") LocalDate maxBirthDate);
-
-    // Count all employees
-    @Query(value = "SELECT COUNT(*) FROM employee", nativeQuery = true)
-    Long countAllEmployees();
-
-    // Count employees by department
-    @Query(value = "SELECT COUNT(*) FROM employee WHERE department_id = :deptId", nativeQuery = true)
-    Long countEmployeesByDepartment(@Param("deptId") Long deptId);
-
-    // Count employees by age range (birthDate range derived in service)
-    @Query(value = "SELECT COUNT(*) FROM employee WHERE birth_date BETWEEN :minBirthDate AND :maxBirthDate", nativeQuery = true)
-    Long countEmployeesByAgeRange(@Param("minBirthDate") LocalDate minBirthDate,
-                                  @Param("maxBirthDate") LocalDate maxBirthDate);
-
-    // Count employees by department and age range
-    @Query(value = "SELECT COUNT(*) FROM employee WHERE department_id = :deptId AND birth_date BETWEEN :minBirthDate AND :maxBirthDate", nativeQuery = true)
-    Long countEmployeesByDepartmentAndAgeRange(@Param("deptId") Long deptId,
-                                               @Param("minBirthDate") LocalDate minBirthDate,
-                                               @Param("maxBirthDate") LocalDate maxBirthDate);
-
 }
