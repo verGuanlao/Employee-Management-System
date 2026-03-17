@@ -69,7 +69,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new EmployeeNotFoundException(employeeId);
         }
         Employee updatedEmployee = dtoToEntity(employeeDTO);
-        updatedEmployee.setName(employeeDTO.getName());
+        updatedEmployee.setEmployeeId(employeeDTO.getEmployeeId());
         return new EmployeeDTO(employeeRepository.save(updatedEmployee));
     }
     public EmployeeDTO deleteEmployee(EmployeeDTO employeeDTO) {
