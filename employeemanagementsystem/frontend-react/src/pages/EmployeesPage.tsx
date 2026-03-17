@@ -13,6 +13,9 @@ import {
   type Page,
 } from "@/lib/utils"
 import { se } from "date-fns/locale"
+import EditEmployeeDialog from "@/components/EditEmployeeDialog"
+import DeleteEmployeeDialog from "@/components/DeleteEmployeeDialog"
+import { format } from "date-fns"
 
 const EmployeesPage = () => {
   const [employees, setEmployees] = useState<EmployeeDTO[]>([])
@@ -38,27 +41,28 @@ const EmployeesPage = () => {
     loadDepartments()
   }, [])
 
-  useEffect(() => {
-    async function loadEmployees() {
-      const params: any = { page, size: 5 }
-      if (selectedDept) params.deptId = selectedDept
-      if (minAge !== null) params.minAge = minAge
-      if (maxAge !== null) params.maxAge = maxAge
+  // reusable function
+  const loadEmployees = async () => {
+    const params: any = { page, size: 5 }
+    if (selectedDept) params.deptId = selectedDept
+    if (minAge !== null) params.minAge = minAge
+    if (maxAge !== null) params.maxAge = maxAge
 
-      const res: ApiResponse<EmployeeStatsResponse> =
-        await fetchEmployees(params)
-      if (res.status === "success") {
-        setEmployees(res.data.employees.content)
-        setStats({
-          ...res.data.stats,
-          averageSalary: res.data.stats.averageSalary ?? 0,
-          averageAge: res.data.stats.averageAge ?? 0,
-        })
-
-        setTotalCount(res.data.employees.totalElements)
-        setTotalPages(res.data.employees.totalPages)
-      }
+    const res: ApiResponse<EmployeeStatsResponse> = await fetchEmployees(params)
+    if (res.status === "success") {
+      setEmployees(res.data.employees.content)
+      setStats({
+        ...res.data.stats,
+        averageSalary: res.data.stats.averageSalary ?? 0,
+        averageAge: res.data.stats.averageAge ?? 0,
+      })
+      setTotalCount(res.data.employees.totalElements)
+      setTotalPages(res.data.employees.totalPages)
     }
+  }
+
+  // effect just calls it
+  useEffect(() => {
     loadEmployees()
   }, [selectedDept, minAge, maxAge, page])
 
@@ -122,11 +126,12 @@ const EmployeesPage = () => {
               <select
                 className="w-full rounded border p-2"
                 value={selectedDept ?? ""}
-                onChange={(e) =>
+                onChange={(e) => {
                   setSelectedDept(
                     e.target.value ? Number(e.target.value) : null
                   )
-                }
+                  setPage(0) // ✅ reset pagination whenever department changes
+                }}
               >
                 <option value="">All Departments</option>
                 {departments.map((dept) => (
@@ -171,14 +176,61 @@ const EmployeesPage = () => {
             </div>
           </div>
 
-          <ul className="divide-y">
-            {employees.map((emp) => (
-              <li key={emp.employeeId} className="flex justify-between py-2">
-                <span>{emp.name}</span>
-                <span className="text-gray-500">{emp.department}</span>
-              </li>
-            ))}
-          </ul>
+          <div className="w-full">
+            {/* Table Header */}
+            <div className="grid grid-cols-6 gap-4 border-b bg-gray-100 px-3 py-2 font-semibold">
+              <div className="truncate">Employee ID</div>
+              <div className="truncate">Name</div>
+              <div className="truncate">Department</div>
+              <div className="truncate">Birthdate</div>
+              <div className="truncate">Salary</div>
+              <div className="mr-3 flex justify-end pr-6">Actions</div>
+            </div>
+
+            {/* Table Body */}
+            <div className="divide-y">
+              {employees.map((emp) => (
+                <div
+                  key={emp.employeeId}
+                  className="grid grid-cols-6 items-center gap-4 px-4 py-2"
+                >
+                  {/* Employee ID */}
+                  <div className="truncate">{emp.employeeId}</div>
+
+                  {/* Name */}
+                  <div className="truncate font-medium">{emp.name}</div>
+
+                  {/* Department */}
+                  <div className="truncate text-gray-500">{emp.department}</div>
+
+                  {/* Birthdate */}
+                  <div className="truncate">
+                    {emp.birthDate
+                      ? format(new Date(emp.birthDate), "MM-dd-yy")
+                      : "-"}
+                  </div>
+
+                  {/* Salary */}
+                  <div className="truncate">₱{emp.salary.toLocaleString()}</div>
+
+                  {/* Actions */}
+                  <div className="flex justify-end gap-2">
+                    <EditEmployeeDialog
+                      employee={emp}
+                      onUpdated={() => {
+                        setPage(0)
+                        loadEmployees()
+                      }}
+                    />
+                    <DeleteEmployeeDialog
+                      employee={emp}
+                      onDeleted={loadEmployees}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </CardContent>
       </Card>
     </DashboardLayout>
