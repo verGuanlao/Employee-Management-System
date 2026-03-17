@@ -12,6 +12,7 @@ import {
   type EmployeeStatsResponse,
   type Page,
 } from "@/lib/utils"
+import { se } from "date-fns/locale"
 
 const EmployeesPage = () => {
   const [employees, setEmployees] = useState<EmployeeDTO[]>([])
@@ -19,6 +20,7 @@ const EmployeesPage = () => {
   const [selectedDept, setSelectedDept] = useState<number | null>(null)
   const [page, setPage] = useState(0)
   const [totalPages, setTotalPages] = useState(1)
+  const [totalCount, setTotalCount] = useState(0)
   const [minAge, setMinAge] = useState<number | null>(null)
   const [maxAge, setMaxAge] = useState<number | null>(null)
   const [stats, setStats] = useState<EmployeeStatsResponse["stats"] | null>(
@@ -47,7 +49,13 @@ const EmployeesPage = () => {
         await fetchEmployees(params)
       if (res.status === "success") {
         setEmployees(res.data.employees.content)
-        setStats(res.data.stats)
+        setStats({
+          ...res.data.stats,
+          averageSalary: res.data.stats.averageSalary ?? 0,
+          averageAge: res.data.stats.averageAge ?? 0,
+        })
+
+        setTotalCount(res.data.employees.totalElements)
         setTotalPages(res.data.employees.totalPages)
       }
     }
@@ -70,7 +78,7 @@ const EmployeesPage = () => {
               <CardTitle>Total Employees</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold">{stats.totalCount}</p>
+              <p className="text-2xl font-bold">{totalCount}</p>
             </CardContent>
           </Card>
           <Card>
