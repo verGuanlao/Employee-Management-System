@@ -69,7 +69,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new EmployeeNotFoundException(employeeId);
         }
         Employee updatedEmployee = dtoToEntity(employeeDTO);
-        updatedEmployee.setName(employeeDTO.getName());
+        updatedEmployee.setEmployeeId(employeeId);
         return new EmployeeDTO(employeeRepository.save(updatedEmployee));
     }
     public EmployeeDTO deleteEmployee(EmployeeDTO employeeDTO) {
@@ -83,41 +83,45 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     public EmployeeStatsResponse getEmployeesWithStats(Long deptId, Integer minAge, Integer maxAge, Pageable pageable) {
-            Page<Employee> page;
-            Double avgSalary;
-            Double avgAge;
+        Page<Employee> page;
+        Double avgSalary;
+        Double avgAge;
+        Long totalCount;
 
+        LocalDate now = LocalDate.now();
+        LocalDate minBirthDate = (maxAge != null) ? now.minusYears(maxAge) : null;
+        LocalDate maxBirthDate = (minAge != null) ? now.minusYears(minAge) : null;
 
-            LocalDate now = LocalDate.now();
-            LocalDate minBirthDate = (maxAge != null) ? now.minusYears(maxAge) : null;
-            LocalDate maxBirthDate = (minAge != null) ? now.minusYears(minAge) : null;
+        if (deptId != null && minAge != null && maxAge != null) {
+            page = employeeRepository.findByDepartmentDepartmentIdAndBirthDateBetween(deptId, minBirthDate, maxBirthDate, pageable);
+            avgSalary = employeeRepository.calculateAverageSalaryByDepartmentAndAgeRange(deptId, minBirthDate, maxBirthDate);
+            avgAge = employeeRepository.calculateAverageAgeByDepartmentAndAgeRange(deptId, minBirthDate, maxBirthDate);
+            totalCount = employeeRepository.countEmployeesByDepartmentAndAgeRange(deptId, minBirthDate, maxBirthDate);
+        } else if (deptId != null) {
+            page = employeeRepository.findByDepartmentDepartmentId(deptId, pageable);
+            avgSalary = employeeRepository.calculateAverageSalaryByDepartment(deptId);
+            avgAge = employeeRepository.calculateAverageAgeByDepartment(deptId);
+            totalCount = employeeRepository.countEmployeesByDepartment(deptId);
+        } else if (minAge != null && maxAge != null) {
+            page = employeeRepository.findByBirthDateBetween(minBirthDate, maxBirthDate, pageable);
+            avgSalary = employeeRepository.calculateAverageSalaryByAgeRange(minBirthDate, maxBirthDate);
+            avgAge = employeeRepository.calculateAverageAgeByRange(minBirthDate, maxBirthDate);
+            totalCount = employeeRepository.countEmployeesByAgeRange(minBirthDate, maxBirthDate);
+        } else {
+            page = employeeRepository.findAll(pageable);
+            avgSalary = employeeRepository.calculateAverageSalaryAll();
+            avgAge = employeeRepository.calculateAverageAgeAll();
+            totalCount = employeeRepository.countAllEmployees();
+        }
 
-            // page, avgSalary, and avgAge calculation adaptation if some values are null
-            if (deptId != null && minAge != null && maxAge != null) {
-                page = employeeRepository.findByDepartmentDepartmentIdAndBirthDateBetween(deptId, minBirthDate, maxBirthDate, pageable);
-                avgSalary = employeeRepository.calculateAverageSalaryByDepartmentAndAgeRange(deptId, minBirthDate, maxBirthDate);
-                avgAge = employeeRepository.calculateAverageAgeByDepartmentAndAgeRange(deptId, minBirthDate, maxBirthDate);
-            } else if (deptId != null) {
-                page = employeeRepository.findByDepartmentDepartmentId(deptId, pageable);
-                avgSalary = employeeRepository.calculateAverageSalaryByDepartment(deptId);
-                avgAge = employeeRepository.calculateAverageAgeByDepartment(deptId);
-            } else if (minAge != null && maxAge != null) {
-                page = employeeRepository.findByBirthDateBetween(minBirthDate, maxBirthDate, pageable);
-                avgSalary = employeeRepository.calculateAverageSalaryByAgeRange(minBirthDate, maxBirthDate);
-                avgAge = employeeRepository.calculateAverageAgeByRange(minBirthDate, maxBirthDate);
-            } else {
-                page = employeeRepository.findAll(pageable);
-                avgSalary = employeeRepository.calculateAverageSalaryAll();
-                avgAge = employeeRepository.calculateAverageAgeAll();
-            }
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("averageSalary", avgSalary);
+        stats.put("averageAge", avgAge);
+        stats.put("totalCount", totalCount);
 
-            Map<String, Object> stats = new HashMap<>();
-            stats.put("averageSalary", avgSalary);
-            stats.put("averageAge", avgAge);
-
-            return EmployeeStatsResponse.builder()
-                    .employees(page.map(EmployeeDTO::new))
-                    .stats(stats)
-                    .build();
+        return EmployeeStatsResponse.builder()
+                .employees(page.map(EmployeeDTO::new))
+                .stats(stats)
+                .build();
     }
 }
