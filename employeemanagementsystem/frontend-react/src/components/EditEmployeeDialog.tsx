@@ -37,8 +37,16 @@ const EditEmployeeDialog: React.FC<Props> = ({ employee, onUpdated }) => {
   )
   const [formData, setFormData] = useState<EmployeeDTO>(employee)
 
-  // 🔑 Departments state
   const [departments, setDepartments] = useState<DepartmentDTO[]>([])
+
+  // Calculate cutoff date for 18 years old
+  const today = new Date()
+  const cutoff = new Date(
+    today.getFullYear() - 18,
+    today.getMonth(),
+    today.getDate()
+  )
+  const cutoffISO = cutoff.toISOString().split("T")[0] // format YYYY-MM-DD
 
   useEffect(() => {
     async function loadDepartments() {
@@ -68,6 +76,11 @@ const EditEmployeeDialog: React.FC<Props> = ({ employee, onUpdated }) => {
       !formData.department
     ) {
       alert("Please fill out all fields before saving.")
+      return
+    }
+
+    if (formData.salary <= 0) {
+      alert("Salary must be a positive number.")
       return
     }
 
@@ -105,7 +118,10 @@ const EditEmployeeDialog: React.FC<Props> = ({ employee, onUpdated }) => {
 
           {/* Name */}
           <div>
-            <label className="mb-1 block font-medium">Name</label>
+            <label className="mb-1 block font-medium">
+              Name
+              <span className="ml-1 text-red-500">*</span>
+            </label>
             <input
               type="text"
               name="name"
@@ -117,7 +133,10 @@ const EditEmployeeDialog: React.FC<Props> = ({ employee, onUpdated }) => {
 
           {/* Department Dropdown */}
           <div>
-            <label className="mb-1 block font-medium">Department</label>
+            <label className="mb-1 block font-medium">
+              Department
+              <span className="ml-1 text-red-500">*</span>
+            </label>
             <select
               name="department"
               className="w-full rounded border p-2"
@@ -135,7 +154,10 @@ const EditEmployeeDialog: React.FC<Props> = ({ employee, onUpdated }) => {
 
           {/* Salary */}
           <div>
-            <label className="mb-1 block font-medium">Salary</label>
+            <label className="mb-1 block font-medium">
+              Salary
+              <span className="ml-1 text-red-500">*</span>
+            </label>
             <input
               type="number"
               name="salary"
@@ -147,7 +169,10 @@ const EditEmployeeDialog: React.FC<Props> = ({ employee, onUpdated }) => {
 
           {/* Birthdate with Calendar */}
           <div>
-            <label className="mb-1 block font-medium">Birthdate</label>
+            <label className="mb-1 block font-medium">
+              Birthdate
+              <span className="ml-1 text-red-500">*</span>
+            </label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" className="w-full justify-start">
@@ -159,6 +184,10 @@ const EditEmployeeDialog: React.FC<Props> = ({ employee, onUpdated }) => {
                   mode="single"
                   selected={birthDate}
                   onSelect={setBirthDate}
+                  disabled={(date) => date > cutoff}
+                  defaultMonth={
+                    formData.birthDate ? parseISO(formData.birthDate) : cutoff
+                  }
                   captionLayout="dropdown"
                 />
               </PopoverContent>

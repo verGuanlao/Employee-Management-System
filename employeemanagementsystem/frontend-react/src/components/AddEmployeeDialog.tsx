@@ -32,6 +32,15 @@ export default function AddEmployeeDialog() {
   const [departments, setDepartments] = useState<DepartmentDTO[]>([])
   const [selectedDept, setSelectedDept] = useState<string>("")
 
+  // Calculate cutoff date for 18 years old
+  const today = new Date()
+  const cutoff = new Date(
+    today.getFullYear() - 18,
+    today.getMonth(),
+    today.getDate()
+  )
+  const cutoffISO = cutoff.toISOString().split("T")[0] // format YYYY-MM-DD
+
   // 🔑 Fetch departments on mount
   useEffect(() => {
     async function loadDepartments() {
@@ -47,7 +56,15 @@ export default function AddEmployeeDialog() {
   }, [])
 
   const handleSubmit = async () => {
-    if (!name || !birthDate || !salary || !selectedDept) return
+    if (!name || !birthDate || !salary || !selectedDept) {
+      alert("Please fill out all fields before saving.")
+      return
+    }
+
+    if (salary <= 0) {
+      alert("Salary must be a positive number.")
+      return
+    }
 
     const birthDateString = format(birthDate, "yyyy-MM-dd")
 
@@ -81,13 +98,19 @@ export default function AddEmployeeDialog() {
         <form className="space-y-4">
           {/* Name */}
           <div>
-            <label className="mb-1 block">Name</label>
+            <label className="mb-1 block">
+              Name
+              <span className="ml-1 text-red-500">*</span>
+            </label>
             <Input value={name} onChange={(e) => setName(e.target.value)} />
           </div>
 
           {/* Department Dropdown */}
           <div>
-            <label className="mb-1 block">Department</label>
+            <label className="mb-1 block">
+              Department
+              <span className="ml-1 text-red-500">*</span>
+            </label>
             <select
               className="w-full rounded border p-2"
               value={selectedDept}
@@ -104,9 +127,13 @@ export default function AddEmployeeDialog() {
 
           {/* Salary */}
           <div>
-            <label className="mb-1 block">Salary</label>
+            <label className="mb-1 block">
+              Salary
+              <span className="ml-1 text-red-500">*</span>
+            </label>
             <Input
               type="number"
+              min="1"
               value={salary}
               onChange={(e) =>
                 setSalary(e.target.value ? Number(e.target.value) : "")
@@ -116,7 +143,10 @@ export default function AddEmployeeDialog() {
 
           {/* Birthdate with Calendar */}
           <div>
-            <label className="mb-1 block">Birthdate</label>
+            <label className="mb-1 block">
+              Birthdate
+              <span className="ml-1 text-red-500">*</span>
+            </label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" className="w-full justify-start">
@@ -128,6 +158,8 @@ export default function AddEmployeeDialog() {
                   mode="single"
                   selected={birthDate}
                   onSelect={setBirthDate}
+                  disabled={(date) => date > cutoff}
+                  defaultMonth={cutoff}
                   captionLayout="dropdown"
                 />
               </PopoverContent>

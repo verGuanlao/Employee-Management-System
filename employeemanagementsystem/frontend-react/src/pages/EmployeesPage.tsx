@@ -160,7 +160,7 @@ const EmployeesPage = () => {
               <label className="mb-2 block font-medium">Min Age</label>
               <input
                 type="number"
-                min={0}
+                min={1}
                 className="w-full rounded border p-2"
                 value={minAge ?? ""}
                 onChange={(e) =>
@@ -172,7 +172,7 @@ const EmployeesPage = () => {
               <label className="mb-2 block font-medium">Max Age</label>
               <input
                 type="number"
-                min={0}
+                min={1}
                 className="w-full rounded border p-2"
                 value={maxAge ?? ""}
                 onChange={(e) =>
