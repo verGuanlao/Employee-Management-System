@@ -29,6 +29,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(MissingFieldsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMissingFields(MissingFieldsException ex) {
+        ApiResponse<Void> response = ApiResponse.<Void>builder()
+                .status("error")
+                .message(ex.getMessage())
+                .data(null)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex) {
         ApiResponse<Void> response = ApiResponse.<Void>builder()
@@ -38,4 +48,5 @@ public class GlobalExceptionHandler {
                 .build();
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
 }

@@ -1,7 +1,7 @@
-import axios from "axios"
+// src/api/api.ts
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-
+import api from "./axiosConfig"
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
@@ -45,14 +45,8 @@ export interface Page<T> {
   number: number
 }
 
-export interface ApiResponse<T> {
-  status: string
-  message: string
-  data: T
-}
-
-const EMPLOYEE_API_URL = "http://localhost:8080/api/employees"
-const DEPARTMENT_API_URL = "http://localhost:8080/api/departments"
+const EMPLOYEE_API_URL = "/api/employees"
+const DEPARTMENT_API_URL = "/api/departments"
 
 // Fetch employees with stats
 export async function fetchEmployees(
@@ -64,11 +58,9 @@ export async function fetchEmployees(
     size?: number
   } = {}
 ): Promise<ApiResponse<EmployeeStatsResponse>> {
-  const response = await axios.get<ApiResponse<EmployeeStatsResponse>>(
+  const response = await api.get<ApiResponse<EmployeeStatsResponse>>(
     EMPLOYEE_API_URL,
-    {
-      params,
-    }
+    { params }
   )
   return response.data
 }
@@ -77,7 +69,7 @@ export async function fetchEmployees(
 export async function fetchEmployeeById(
   employeeId: number
 ): Promise<ApiResponse<EmployeeDTO>> {
-  const response = await axios.get<ApiResponse<EmployeeDTO>>(
+  const response = await api.get<ApiResponse<EmployeeDTO>>(
     `${EMPLOYEE_API_URL}/${employeeId}`
   )
   return response.data
@@ -88,11 +80,9 @@ export async function searchEmployees(
   query: string,
   params: { page?: number; size?: number } = {}
 ): Promise<ApiResponse<EmployeeStatsResponse>> {
-  const response = await axios.get<ApiResponse<EmployeeStatsResponse>>(
+  const response = await api.get<ApiResponse<EmployeeStatsResponse>>(
     `${EMPLOYEE_API_URL}/search`,
-    {
-      params: { query, ...params },
-    }
+    { params: { query, ...params } }
   )
   return response.data
 }
@@ -101,7 +91,7 @@ export async function searchEmployees(
 export async function addEmployee(
   employeeDTO: EmployeeDTO
 ): Promise<ApiResponse<EmployeeDTO>> {
-  const response = await axios.post<ApiResponse<EmployeeDTO>>(
+  const response = await api.post<ApiResponse<EmployeeDTO>>(
     EMPLOYEE_API_URL,
     employeeDTO
   )
@@ -112,7 +102,7 @@ export async function addEmployee(
 export async function updateEmployee(
   employeeDTO: EmployeeDTO
 ): Promise<ApiResponse<EmployeeDTO>> {
-  const response = await axios.put<ApiResponse<EmployeeDTO>>(
+  const response = await api.put<ApiResponse<EmployeeDTO>>(
     EMPLOYEE_API_URL,
     employeeDTO
   )
@@ -123,7 +113,7 @@ export async function updateEmployee(
 export async function deleteEmployee(
   employeeDTO: EmployeeDTO
 ): Promise<ApiResponse<EmployeeDTO>> {
-  const response = await axios.delete<ApiResponse<EmployeeDTO>>(
+  const response = await api.delete<ApiResponse<EmployeeDTO>>(
     EMPLOYEE_API_URL,
     { data: employeeDTO }
   )
@@ -134,11 +124,9 @@ export async function deleteEmployee(
 export async function fetchDepartments(
   params: { page?: number; size?: number } = {}
 ): Promise<ApiResponse<Page<DepartmentDTO>>> {
-  const response = await axios.get<ApiResponse<Page<DepartmentDTO>>>(
+  const response = await api.get<ApiResponse<Page<DepartmentDTO>>>(
     DEPARTMENT_API_URL,
-    {
-      params,
-    }
+    { params }
   )
   return response.data
 }
@@ -148,11 +136,9 @@ export async function searchDepartments(
   query: string,
   params: { page?: number; size?: number } = {}
 ): Promise<ApiResponse<Page<DepartmentDTO>>> {
-  const response = await axios.get<ApiResponse<Page<DepartmentDTO>>>(
+  const response = await api.get<ApiResponse<Page<DepartmentDTO>>>(
     `${DEPARTMENT_API_URL}/search`,
-    {
-      params: { query, ...params },
-    }
+    { params: { query, ...params } }
   )
   return response.data
 }
