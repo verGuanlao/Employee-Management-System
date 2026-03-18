@@ -7,6 +7,9 @@ import {
   type Page,
   type ApiResponse,
 } from "@/lib/utils"
+import AddDepartmentDialog from "@/components/AddDepartmentDialog"
+import EditDepartmentDialog from "@/components/EditDepartmentDialog"
+import DeleteDepartmentDialog from "@/components/DeleteDepartmentDialog"
 
 const DepartmentsPage = () => {
   const [departments, setDepartments] = useState<DepartmentDTO[]>([])
@@ -14,43 +17,65 @@ const DepartmentsPage = () => {
   const [page, setPage] = useState(0)
   const [totalPages, setTotalPages] = useState(1)
 
-  useEffect(() => {
-    const timeout = setTimeout(async () => {
-      const res: ApiResponse<Page<DepartmentDTO>> =
-        searchQuery.trim() !== ""
-          ? await searchDepartments(searchQuery, { page: 0, size: 5 })
-          : await searchDepartments("", { page: 0, size: 5 })
+  const loadDepartments = async () => {
+    const res: ApiResponse<Page<DepartmentDTO>> =
+      searchQuery.trim() !== ""
+        ? await searchDepartments(searchQuery, { page, size: 5 })
+        : await searchDepartments("", { page, size: 5 })
 
-      if (res.status === "success") {
-        setDepartments(res.data.content)
-        setTotalPages(res.data.totalPages)
-      }
+    if (res.status === "success") {
+      setDepartments(res.data.content)
+      setTotalPages(res.data.totalPages)
+    } else {
+      alert(res.message ?? "Error loading departments")
+    }
+  }
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      loadDepartments()
     }, 300) // debounce
     return () => clearTimeout(timeout)
-  }, [searchQuery])
+  }, [searchQuery, page])
 
   return (
     <DashboardLayout page={page} totalPages={totalPages} onPageChange={setPage}>
       <Card>
-        <CardHeader>
+        <CardHeader className="flex items-center justify-between">
           <CardTitle>Department List</CardTitle>
+          <AddDepartmentDialog onAdded={loadDepartments} />
         </CardHeader>
         <CardContent>
-          {/* Search Field */}
           <div className="mb-4">
             <input
               type="text"
               placeholder="Search departments..."
               className="w-full rounded border p-2"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value)
+                setPage(0)
+              }}
             />
           </div>
 
           <ul className="divide-y">
             {departments.map((dept) => (
-              <li key={dept.departmentId} className="flex justify-between py-2">
+              <li
+                key={dept.departmentId}
+                className="flex items-center justify-between py-2"
+              >
                 <span>{dept.departmentName}</span>
+                <div className="flex gap-2">
+                  <EditDepartmentDialog
+                    department={dept}
+                    onUpdated={loadDepartments}
+                  />
+                  <DeleteDepartmentDialog
+                    department={dept}
+                    onDeleted={loadDepartments}
+                  />
+                </div>
               </li>
             ))}
           </ul>

@@ -33,8 +33,8 @@ export interface ApiResponse<T> {
 }
 
 export interface DepartmentDTO {
-  departmentId: number
-  departmentName: string
+  departmentId: number | null
+  departmentName: string | null
 }
 
 export interface Page<T> {
@@ -141,4 +141,49 @@ export async function searchDepartments(
     { params: { query, ...params } }
   )
   return response.data
+}
+
+// Add Department
+export async function addDepartment(
+  departmentDTO: DepartmentDTO
+): Promise<ApiResponse<DepartmentDTO>> {
+  try {
+    const response = await api.post<ApiResponse<DepartmentDTO>>(
+      DEPARTMENT_API_URL,
+      departmentDTO
+    )
+    return response.data
+  } catch (error: any) {
+    return error.response?.data as ApiResponse<DepartmentDTO>
+  }
+}
+
+// Update Department
+export async function updateDepartment(
+  departmentDTO: DepartmentDTO
+): Promise<ApiResponse<DepartmentDTO>> {
+  try {
+    const response = await api.put<ApiResponse<DepartmentDTO>>(
+      DEPARTMENT_API_URL,
+      departmentDTO
+    )
+    return response.data
+  } catch (error: any) {
+    return error.response?.data as ApiResponse<DepartmentDTO>
+  }
+}
+
+// Delete Department
+export async function deleteDepartment(
+  departmentDTO: DepartmentDTO
+): Promise<ApiResponse<DepartmentDTO>> {
+  try {
+    const response = await api.delete<ApiResponse<DepartmentDTO>>(
+      DEPARTMENT_API_URL,
+      { data: departmentDTO }
+    )
+    return response.data
+  } catch (error: any) {
+    return error.response?.data as ApiResponse<DepartmentDTO>
+  }
 }
