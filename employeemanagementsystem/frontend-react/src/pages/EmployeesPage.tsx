@@ -6,13 +6,13 @@ import { useEffect, useState } from "react"
 import {
   fetchEmployees,
   fetchDepartments,
+  searchEmployees,
   type EmployeeDTO,
   type DepartmentDTO,
   type ApiResponse,
   type EmployeeStatsResponse,
   type Page,
 } from "@/lib/utils"
-import { se } from "date-fns/locale"
 import EditEmployeeDialog from "@/components/EditEmployeeDialog"
 import DeleteEmployeeDialog from "@/components/DeleteEmployeeDialog"
 import { format } from "date-fns"
@@ -29,6 +29,7 @@ const EmployeesPage = () => {
   const [stats, setStats] = useState<EmployeeStatsResponse["stats"] | null>(
     null
   )
+  const [searchTerm, setSearchTerm] = useState("")
 
   useEffect(() => {
     async function loadDepartments() {
@@ -41,35 +42,49 @@ const EmployeesPage = () => {
     loadDepartments()
   }, [])
 
-  // reusable function
   const loadEmployees = async () => {
     const params: any = { page, size: 5 }
     if (selectedDept) params.deptId = selectedDept
     if (minAge !== null) params.minAge = minAge
     if (maxAge !== null) params.maxAge = maxAge
 
-    const res: ApiResponse<EmployeeStatsResponse> = await fetchEmployees(params)
-    if (res.status === "success") {
-      setEmployees(res.data.employees.content)
-      setStats({
-        ...res.data.stats,
-        averageSalary: res.data.stats.averageSalary ?? 0,
-        averageAge: res.data.stats.averageAge ?? 0,
-      })
-      setTotalCount(res.data.employees.totalElements)
-      setTotalPages(res.data.employees.totalPages)
+    if (searchTerm.trim() !== "") {
+      const res: ApiResponse<EmployeeStatsResponse> = await searchEmployees(
+        searchTerm,
+        params
+      )
+      if (res.status === "success") {
+        setEmployees(res.data.employees.content)
+        setTotalCount(res.data.employees.totalElements)
+        setTotalPages(res.data.employees.totalPages)
+        setStats(null)
+      }
+    } else {
+      const res: ApiResponse<EmployeeStatsResponse> =
+        await fetchEmployees(params)
+      if (res.status === "success") {
+        setEmployees(res.data.employees.content)
+        setStats({
+          ...res.data.stats,
+          averageSalary: res.data.stats.averageSalary ?? 0,
+          averageAge: res.data.stats.averageAge ?? 0,
+        })
+        setTotalCount(res.data.employees.totalElements)
+        setTotalPages(res.data.employees.totalPages)
+      }
     }
   }
 
   // effect just calls it
   useEffect(() => {
     loadEmployees()
-  }, [selectedDept, minAge, maxAge, page])
+  }, [selectedDept, minAge, maxAge, page, searchTerm])
 
   const resetFilters = () => {
     setSelectedDept(null)
     setMinAge(null)
     setMaxAge(null)
+    setSearchTerm("")
   }
 
   return (
@@ -119,8 +134,8 @@ const EmployeesPage = () => {
           <AddEmployeeDialog />
         </CardHeader>
         <CardContent>
-          {/* Filters */}
-          <div className="mb-4 grid grid-cols-4 items-end gap-4">
+          {/* Filters + Search */}
+          <div className="mb-4 grid grid-cols-6 items-end gap-4">
             <div>
               <label className="mb-2 block font-medium">Department</label>
               <select
@@ -130,7 +145,7 @@ const EmployeesPage = () => {
                   setSelectedDept(
                     e.target.value ? Number(e.target.value) : null
                   )
-                  setPage(0) // ✅ reset pagination whenever department changes
+                  setPage(0)
                 }}
               >
                 <option value="">All Departments</option>
@@ -166,12 +181,37 @@ const EmployeesPage = () => {
               />
             </div>
             <div>
+              <label className="mb-2 block font-medium">Search Employee</label>
+              <input
+                type="text"
+                className="w-full rounded border p-2"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value)
+                  setPage(0)
+                }}
+                placeholder="Enter name or ID..."
+              />
+            </div>
+            <div>
               <Button
                 variant="outline"
                 className="w-full"
                 onClick={resetFilters}
               >
                 Reset Filters
+              </Button>
+            </div>
+            <div>
+              <Button
+                variant="secondary"
+                className="w-full"
+                onClick={() => {
+                  setSearchTerm("")
+                  setPage(0)
+                }}
+              >
+                Clear Search
               </Button>
             </div>
           </div>
@@ -194,26 +234,15 @@ const EmployeesPage = () => {
                   key={emp.employeeId}
                   className="grid grid-cols-6 items-center gap-4 px-4 py-2"
                 >
-                  {/* Employee ID */}
                   <div className="truncate">{emp.employeeId}</div>
-
-                  {/* Name */}
                   <div className="truncate font-medium">{emp.name}</div>
-
-                  {/* Department */}
                   <div className="truncate text-gray-500">{emp.department}</div>
-
-                  {/* Birthdate */}
                   <div className="truncate">
                     {emp.birthDate
                       ? format(new Date(emp.birthDate), "MM-dd-yy")
                       : "-"}
                   </div>
-
-                  {/* Salary */}
                   <div className="truncate">₱{emp.salary.toLocaleString()}</div>
-
-                  {/* Actions */}
                   <div className="flex justify-end gap-2">
                     <EditEmployeeDialog
                       employee={emp}
