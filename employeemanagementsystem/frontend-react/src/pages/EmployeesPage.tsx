@@ -2,6 +2,11 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import DashboardLayout from "@/layouts/DashboardLayout"
 import AddEmployeeDialog from "@/components/AddEmployeeDialog"
+import {
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
+} from "@/components/ui/hover-card"
 import { useEffect, useState } from "react"
 import {
   fetchEmployees,
@@ -156,30 +161,50 @@ const EmployeesPage = () => {
                 ))}
               </select>
             </div>
-            <div>
-              <label className="mb-2 block font-medium">Min Age</label>
-              <input
-                type="number"
-                min={1}
-                className="w-full rounded border p-2"
-                value={minAge ?? ""}
-                onChange={(e) =>
-                  setMinAge(e.target.value ? Number(e.target.value) : null)
-                }
-              />
-            </div>
-            <div>
-              <label className="mb-2 block font-medium">Max Age</label>
-              <input
-                type="number"
-                min={1}
-                className="w-full rounded border p-2"
-                value={maxAge ?? ""}
-                onChange={(e) =>
-                  setMaxAge(e.target.value ? Number(e.target.value) : null)
-                }
-              />
-            </div>
+            <HoverCard
+              open={minAge !== null && maxAge !== null && minAge >= maxAge}
+            >
+              <HoverCardTrigger asChild>
+                <div className="col-span-2 flex gap-4">
+                  <div className="flex-1">
+                    <label className="mb-2 block font-medium">Min Age</label>
+                    <input
+                      type="number"
+                      min={1}
+                      className="w-full rounded border p-2"
+                      value={minAge ?? ""}
+                      onChange={(e) =>
+                        setMinAge(
+                          e.target.value ? Number(e.target.value) : null
+                        )
+                      }
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="mb-2 block font-medium">Max Age</label>
+                    <input
+                      type="number"
+                      min={1}
+                      className="w-full rounded border p-2"
+                      value={maxAge ?? ""}
+                      onChange={(e) =>
+                        setMaxAge(
+                          e.target.value ? Number(e.target.value) : null
+                        )
+                      }
+                    />
+                  </div>
+                </div>
+              </HoverCardTrigger>
+              <HoverCardContent
+                side="top"
+                align="center"
+                className="text-sm text-red-600"
+              >
+                Min age must be less than Max age
+              </HoverCardContent>
+            </HoverCard>
+
             <div>
               <label className="mb-2 block font-medium">Search Employee</label>
               <input

@@ -21,7 +21,13 @@ export default function DashboardLayout({
   onPageChange,
 }: DashboardLayoutProps) {
   return (
-    <SidebarProvider>
+    <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "10rem",
+        } as React.CSSProperties
+      }
+    >
       <AppSidebar />
       <SidebarInset>
         <main className="p-4">
