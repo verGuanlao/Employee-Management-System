@@ -4,6 +4,8 @@ import com.example.employeemanagementsystem.dto.DepartmentDTO;
 import com.example.employeemanagementsystem.dto.EmployeeDTO;
 import com.example.employeemanagementsystem.dto.EmployeeStatsResponse;
 import com.example.employeemanagementsystem.exception.EmployeeNotFoundException;
+import com.example.employeemanagementsystem.exception.ImproperAgeException;
+import com.example.employeemanagementsystem.exception.NonPositiveSalaryException;
 import com.example.employeemanagementsystem.model.Department;
 import com.example.employeemanagementsystem.model.Employee;
 import com.example.employeemanagementsystem.repository.EmployeeRepository;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +27,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     private EmployeeRepository employeeRepository;
     @Autowired
     private DepartmentService departmentService;
+
+    // Calculates if the given date is of age 18 and above
+    public static boolean isAtLeast18(LocalDate birthDate) {
+        LocalDate today = LocalDate.now();
+        return Period.between(birthDate, today).getYears() >= 18;
+    }
 
     private Department getDepartmentStub (String departmentName) {
         Department departmentStub = new Department();
@@ -58,6 +67,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (employeeDTO.areFieldsMissing()) {
             throw new EmployeeNotFoundException();
         }
+        if (!isAtLeast18(employeeDTO.getBirthDate())) {
+            throw new ImproperAgeException();
+        }
+
+        if (employeeDTO.getSalary().compareTo(employeeDTO.getSalary()) > 0) {
+            throw new NonPositiveSalaryException();
+        }
         Employee newEmployee = employeeRepository.save(dtoToEntity(employeeDTO));
         return new EmployeeDTO(newEmployee);
     }
@@ -67,6 +83,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = employeeRepository.findById(employeeId).orElse(null);
         if(employee == null){
             throw new EmployeeNotFoundException(employeeId);
+        }
+        if (!isAtLeast18(employeeDTO.getBirthDate())) {
+            throw new ImproperAgeException();
+        }
+
+        if (employeeDTO.getSalary().compareTo(employeeDTO.getSalary()) > 0) {
+            throw new NonPositiveSalaryException();
         }
         Employee updatedEmployee = dtoToEntity(employeeDTO);
         updatedEmployee.setEmployeeId(employeeDTO.getEmployeeId());

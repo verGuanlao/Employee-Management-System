@@ -39,6 +39,26 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(NonPositiveSalaryException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMissingFields(NonPositiveSalaryException ex) {
+        ApiResponse<Void> response = ApiResponse.<Void>builder()
+                .status("error")
+                .message(ex.getMessage())
+                .data(null)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ImproperAgeException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMissingFields(ImproperAgeException ex) {
+        ApiResponse<Void> response = ApiResponse.<Void>builder()
+                .status("error")
+                .message(ex.getMessage())
+                .data(null)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex) {
         ApiResponse<Void> response = ApiResponse.<Void>builder()

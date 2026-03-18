@@ -24,7 +24,11 @@ import {
   type Page,
 } from "@/lib/utils"
 
-export default function AddEmployeeDialog() {
+interface Props {
+  onUpdated?: () => void
+}
+
+export default function AddEmployeeDialog({ onUpdated }: Props) {
   const [isOpen, setIsOpen] = useState(false)
   const [name, setName] = useState("")
   const [salary, setSalary] = useState<number | "">("")
@@ -39,9 +43,7 @@ export default function AddEmployeeDialog() {
     today.getMonth(),
     today.getDate()
   )
-  const cutoffISO = cutoff.toISOString().split("T")[0] // format YYYY-MM-DD
 
-  // 🔑 Fetch departments on mount
   useEffect(() => {
     async function loadDepartments() {
       const res: ApiResponse<Page<DepartmentDTO>> = await fetchDepartments({
@@ -81,8 +83,9 @@ export default function AddEmployeeDialog() {
     setSalary("")
     setBirthDate(undefined)
     setSelectedDept("")
-
     setIsOpen(false)
+
+    if (onUpdated) onUpdated()
   }
 
   return (

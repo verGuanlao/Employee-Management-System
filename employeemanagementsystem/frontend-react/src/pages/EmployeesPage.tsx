@@ -136,7 +136,12 @@ const EmployeesPage = () => {
       <Card>
         <CardHeader className="flex items-center gap-4">
           <CardTitle>Employee List</CardTitle>
-          <AddEmployeeDialog />
+          <AddEmployeeDialog
+            onUpdated={() => {
+              setPage(0)
+              loadEmployees()
+            }}
+          />
         </CardHeader>
         <CardContent>
           {/* Filters + Search */}

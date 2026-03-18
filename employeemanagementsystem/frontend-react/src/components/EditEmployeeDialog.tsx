@@ -89,7 +89,7 @@ const EditEmployeeDialog: React.FC<Props> = ({ employee, onUpdated }) => {
     await updateEmployee({
       ...formData,
       birthDate: birthDateString,
-      employeeId: formData.employeeId, // ✅ ensure ID is preserved
+      employeeId: formData.employeeId,
     })
 
     setOpen(false)
