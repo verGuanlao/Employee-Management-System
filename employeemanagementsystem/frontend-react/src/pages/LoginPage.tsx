@@ -29,7 +29,12 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <Card className="w-full max-w-md shadow-lg">
-        <CardHeader>
+        <CardHeader className="flex flex-col items-center">
+          <img
+            src="/logo.svg" // ✅ remove /public, just use /logo.svg
+            alt="Employee Portal Logo"
+            className="h-24 w-auto"
+          />
           <CardTitle className="text-center text-2xl font-bold">
             Login
           </CardTitle>
@@ -37,9 +42,7 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">
-                Username <span className="text-red-500">*</span>
-              </Label>
+              <Label htmlFor="username">Username</Label>
               <Input
                 id="username"
                 value={username}
@@ -49,9 +52,7 @@ export default function LoginPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">
-                Password <span className="text-red-500">*</span>
-              </Label>
+              <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
