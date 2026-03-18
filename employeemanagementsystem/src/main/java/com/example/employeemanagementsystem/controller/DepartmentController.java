@@ -2,15 +2,15 @@ package com.example.employeemanagementsystem.controller;
 
 import com.example.employeemanagementsystem.dto.ApiResponse;
 import com.example.employeemanagementsystem.dto.DepartmentDTO;
+import com.example.employeemanagementsystem.dto.EmployeeDTO;
 import com.example.employeemanagementsystem.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/api/departments")
@@ -41,4 +41,32 @@ public class DepartmentController {
 
         return ResponseEntity.ok(apiResponse);
     }
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<DepartmentDTO>> addDepartment(@RequestBody DepartmentDTO departmentDTO) {
+        ApiResponse<DepartmentDTO> apiResponse = ApiResponse.<DepartmentDTO>builder()
+                .status("success")
+                .message("Department added successfully")
+                .data(departmentService.addDepartment(departmentDTO)).build();
+        return  ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+    }
+
+    @PutMapping
+    public ResponseEntity<ApiResponse<DepartmentDTO>> updateDepartment(@RequestBody DepartmentDTO departmentDTO) {
+        ApiResponse<DepartmentDTO> apiResponse = ApiResponse.<DepartmentDTO>builder()
+                .status("success")
+                .message("Department updated successfully")
+                .data(departmentService.updateDepartment(departmentDTO)).build();
+        return  ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<ApiResponse<DepartmentDTO>> deleteDepartment(@RequestBody DepartmentDTO departmentDTO) {
+        ApiResponse<DepartmentDTO> apiResponse = ApiResponse.<DepartmentDTO>builder()
+                .status("success")
+                .message("Department deleted successfully")
+                .data(departmentService.deleteDepartment(departmentDTO)).build();
+        return  ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+    }
+
 }

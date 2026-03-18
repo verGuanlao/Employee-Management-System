@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NonPositiveSalaryException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMissingFields(NonPositiveSalaryException ex) {
+    public ResponseEntity<ApiResponse<Void>> handleNonPositiveSalary(NonPositiveSalaryException ex) {
         ApiResponse<Void> response = ApiResponse.<Void>builder()
                 .status("error")
                 .message(ex.getMessage())
@@ -50,7 +50,27 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ImproperAgeException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMissingFields(ImproperAgeException ex) {
+    public ResponseEntity<ApiResponse<Void>> handleImproperAge(ImproperAgeException ex) {
+        ApiResponse<Void> response = ApiResponse.<Void>builder()
+                .status("error")
+                .message(ex.getMessage())
+                .data(null)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidDepartmentDeleteException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidDepartmentDelete(InvalidDepartmentDeleteException ex) {
+        ApiResponse<Void> response = ApiResponse.<Void>builder()
+                .status("error")
+                .message(ex.getMessage())
+                .data(null)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DepartmentAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDepartmentAlreadyExists(DepartmentAlreadyExistsException ex) {
         ApiResponse<Void> response = ApiResponse.<Void>builder()
                 .status("error")
                 .message(ex.getMessage())

@@ -9,4 +9,7 @@ public interface DepartmentService {
     public DepartmentDTO getDepartmentId(String name);
     public Page<DepartmentDTO> getDepartments(Pageable pageable);
     public Page<DepartmentDTO> getDepartmentsNameContainingIgnoreCase(String name, Pageable pageable);
+    public DepartmentDTO addDepartment(DepartmentDTO departmentDTO);
+    public DepartmentDTO updateDepartment(DepartmentDTO departmentDTO);
+    public DepartmentDTO deleteDepartment(DepartmentDTO departmentDTO);
 }

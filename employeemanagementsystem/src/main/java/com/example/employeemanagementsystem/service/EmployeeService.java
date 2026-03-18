@@ -12,5 +12,4 @@ public interface EmployeeService {
     public EmployeeDTO updateEmployee(EmployeeDTO employeeDTO);
     public EmployeeDTO deleteEmployee(EmployeeDTO employeeDTO);
     public EmployeeStatsResponse getEmployeesWithStats(Long deptId, Integer minAge, Integer maxAge, Pageable pageable);
-
 }

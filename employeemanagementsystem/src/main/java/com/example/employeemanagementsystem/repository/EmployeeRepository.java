@@ -12,6 +12,9 @@ import java.util.Optional;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
+    // Check if employees in a department exist
+    boolean existsByDepartmentDepartmentId(Long departmentId);
+
     // Getting single employee
     Page<Employee> findByNameContainingIgnoreCase(String name,  Pageable pageable);
 
