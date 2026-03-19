@@ -9,10 +9,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequestMapping("/api/departments")
 public class DepartmentController {
 
@@ -43,6 +44,7 @@ public class DepartmentController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<DepartmentDTO>> addDepartment(@RequestBody DepartmentDTO departmentDTO) {
         ApiResponse<DepartmentDTO> apiResponse = ApiResponse.<DepartmentDTO>builder()
                 .status("success")
@@ -52,21 +54,22 @@ public class DepartmentController {
     }
 
     @PutMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<DepartmentDTO>> updateDepartment(@RequestBody DepartmentDTO departmentDTO) {
         ApiResponse<DepartmentDTO> apiResponse = ApiResponse.<DepartmentDTO>builder()
                 .status("success")
                 .message("Department updated successfully")
                 .data(departmentService.updateDepartment(departmentDTO)).build();
-        return  ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+        return  ResponseEntity.ok().body(apiResponse);
     }
 
     @DeleteMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<DepartmentDTO>> deleteDepartment(@RequestBody DepartmentDTO departmentDTO) {
         ApiResponse<DepartmentDTO> apiResponse = ApiResponse.<DepartmentDTO>builder()
                 .status("success")
                 .message("Department deleted successfully")
                 .data(departmentService.deleteDepartment(departmentDTO)).build();
-        return  ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+        return  ResponseEntity.ok().body(apiResponse);
     }
-
 }

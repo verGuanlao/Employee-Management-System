@@ -15,7 +15,7 @@ import jakarta.validation.constraints.NotBlank;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int userId;
+    private Long userId;
 
     @NotBlank(message = "Username cannot be blank")
     private String username;

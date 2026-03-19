@@ -18,18 +18,24 @@ public class UserSeeder {
         return args -> {
             try {
                 // Example: create an admin user
-                UserDTO admin = new UserDTO();
-                admin.setUsername("admin");
-                admin.setPassword("harderpassword"); // will be hashed by registerUser
-                admin.setRole("ADMIN");
-
-                userService.registerUser(admin);
+//                UserDTO admin = new UserDTO();
+//                admin.setUsername("admin");
+//                admin.setPassword("harderpassword"); // will be hashed by registerUser
+//                admin.setRole("ADMIN");
+//
+//                userService.registerUser(admin);
 
                 // Example: create a regular user
                 UserDTO user = new UserDTO();
-                user.setUsername("user");
+//                user.setUsername("user");
+//                user.setPassword("password");
+//                user.setRole("USER");
+//
+//                userService.registerUser(user);
+
+                user.setUsername("user2");
                 user.setPassword("password");
-                user.setRole("USER");
+                user.setRole("ADMIN");
 
                 userService.registerUser(user);
 

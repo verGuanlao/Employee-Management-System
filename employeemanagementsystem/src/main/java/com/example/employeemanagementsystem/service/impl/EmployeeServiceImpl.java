@@ -16,10 +16,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import static com.example.employeemanagementsystem.service.impl.EmployeeServiceImpl.ValidationRule.*;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -27,6 +30,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     private EmployeeRepository employeeRepository;
     @Autowired
     private DepartmentService departmentService;
+
+
+    // check validations
+    enum ValidationRule {
+        CHECK_MISSING_FIELDS,
+        CHECK_EXISTS,
+        CHECK_AGE,
+        CHECK_SALARY
+    }
 
     // Calculates if the given date is of age 18 and above
     public static boolean isAtLeast18(LocalDate birthDate) {
@@ -64,43 +76,21 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     public EmployeeDTO addEmployee(EmployeeDTO employeeDTO) {
-        if (employeeDTO.areFieldsMissing()) {
-            throw new EmployeeNotFoundException();
-        }
-        if (!isAtLeast18(employeeDTO.getBirthDate())) {
-            throw new ImproperAgeException();
-        }
-
-        if (employeeDTO.getSalary().compareTo(employeeDTO.getSalary()) > 0) {
-            throw new NonPositiveSalaryException();
-        }
+        validateEmployee(employeeDTO, CHECK_MISSING_FIELDS, CHECK_AGE, CHECK_SALARY);
         Employee newEmployee = employeeRepository.save(dtoToEntity(employeeDTO));
         return new EmployeeDTO(newEmployee);
     }
 
     public EmployeeDTO updateEmployee(EmployeeDTO employeeDTO) {
-        Long employeeId = employeeDTO.getEmployeeId();
-        Employee employee = employeeRepository.findById(employeeId).orElse(null);
-        if(employee == null){
-            throw new EmployeeNotFoundException(employeeId);
-        }
-        if (!isAtLeast18(employeeDTO.getBirthDate())) {
-            throw new ImproperAgeException();
-        }
-
-        if (employeeDTO.getSalary().compareTo(employeeDTO.getSalary()) > 0) {
-            throw new NonPositiveSalaryException();
-        }
+        validateEmployee(employeeDTO, CHECK_MISSING_FIELDS, CHECK_EXISTS, CHECK_AGE, CHECK_SALARY);
         Employee updatedEmployee = dtoToEntity(employeeDTO);
         updatedEmployee.setEmployeeId(employeeDTO.getEmployeeId());
         return new EmployeeDTO(employeeRepository.save(updatedEmployee));
     }
+
     public EmployeeDTO deleteEmployee(EmployeeDTO employeeDTO) {
-        Long employeeId = employeeDTO.getEmployeeId();
-        Employee employee = employeeRepository.findById(employeeId).orElse(null);
-        if(employee == null){
-            throw new EmployeeNotFoundException(employeeId);
-        }
+        validateEmployee(employeeDTO, CHECK_EXISTS);
+        Employee employee = employeeRepository.findById(employeeDTO.getEmployeeId()).get();
         employeeRepository.delete(employee);
         return new EmployeeDTO(employee);
     }
@@ -142,5 +132,27 @@ public class EmployeeServiceImpl implements EmployeeService {
                     .employees(page.map(EmployeeDTO::new))
                     .stats(stats)
                     .build();
+    }
+
+    private void validateEmployee(EmployeeDTO employeeDTO, ValidationRule... rules) {
+        Set<ValidationRule> ruleSet = Set.of(rules);
+
+        if (ruleSet.contains(CHECK_MISSING_FIELDS) && employeeDTO.areFieldsMissing()) {
+            throw new EmployeeNotFoundException();
+        }
+
+        if (ruleSet.contains(CHECK_EXISTS)) {
+            Long employeeId = employeeDTO.getEmployeeId();
+            employeeRepository.findById(employeeId)
+                    .orElseThrow(() -> new EmployeeNotFoundException(employeeId));
+        }
+
+        if (ruleSet.contains(CHECK_AGE) && !isAtLeast18(employeeDTO.getBirthDate())) {
+            throw new ImproperAgeException();
+        }
+
+        if (ruleSet.contains(CHECK_SALARY) && employeeDTO.getSalary().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new NonPositiveSalaryException();
+        }
     }
 }
