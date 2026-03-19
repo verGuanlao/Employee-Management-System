@@ -4,16 +4,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover"
-import { format, parseISO } from "date-fns"
-import { useState, useEffect } from "react"
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { format, parseISO } from 'date-fns';
+import { useState, useEffect } from 'react';
 import {
   type EmployeeDTO,
   updateEmployee,
@@ -21,80 +17,69 @@ import {
   type DepartmentDTO,
   type ApiResponse,
   type Page,
-} from "@/lib/utils"
+} from '@/lib/utils';
 
 interface Props {
-  employee: EmployeeDTO
-  onUpdated?: () => void
+  employee: EmployeeDTO;
+  onUpdated?: () => void;
 }
 
 const EditEmployeeDialog: React.FC<Props> = ({ employee, onUpdated }) => {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   // convert existing birthDate string to Date
   const [birthDate, setBirthDate] = useState<Date | undefined>(
     employee.birthDate ? parseISO(employee.birthDate) : undefined
-  )
-  const [formData, setFormData] = useState<EmployeeDTO>(employee)
+  );
+  const [formData, setFormData] = useState<EmployeeDTO>(employee);
 
-  const [departments, setDepartments] = useState<DepartmentDTO[]>([])
+  const [departments, setDepartments] = useState<DepartmentDTO[]>([]);
 
   // Calculate cutoff date for 18 years old
-  const today = new Date()
-  const cutoff = new Date(
-    today.getFullYear() - 18,
-    today.getMonth(),
-    today.getDate()
-  )
-  const cutoffISO = cutoff.toISOString().split("T")[0] // format YYYY-MM-DD
+  const today = new Date();
+  const cutoff = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+  const cutoffISO = cutoff.toISOString().split('T')[0]; // format YYYY-MM-DD
 
   useEffect(() => {
     async function loadDepartments() {
       const res: ApiResponse<Page<DepartmentDTO>> = await fetchDepartments({
         page: 0,
         size: 50,
-      })
-      if (res.status === "success") {
-        setDepartments(res.data.content)
+      });
+      if (res.status === 'success') {
+        setDepartments(res.data.content);
       }
     }
-    loadDepartments()
-  }, [])
+    loadDepartments();
+  }, []);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async () => {
-    if (
-      !formData.name ||
-      !birthDate ||
-      !formData.salary ||
-      !formData.department
-    ) {
-      alert("Please fill out all fields before saving.")
-      return
+    if (!formData.name || !birthDate || !formData.salary || !formData.department) {
+      alert('Please fill out all fields before saving.');
+      return;
     }
 
     if (formData.salary <= 0) {
-      alert("Salary must be a positive number.")
-      return
+      alert('Salary must be a positive number.');
+      return;
     }
 
-    const birthDateString = format(birthDate, "yyyy-MM-dd")
+    const birthDateString = format(birthDate, 'yyyy-MM-dd');
 
     await updateEmployee({
       ...formData,
       birthDate: birthDateString,
       employeeId: formData.employeeId,
-    })
+    });
 
-    setOpen(false)
-    if (onUpdated) onUpdated()
-  }
+    setOpen(false);
+    if (onUpdated) onUpdated();
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -111,9 +96,7 @@ const EditEmployeeDialog: React.FC<Props> = ({ employee, onUpdated }) => {
           {/* Employee ID (read-only) */}
           <div>
             <label className="mb-1 block font-medium">Employee ID</label>
-            <p className="rounded border bg-gray-100 p-2 text-gray-600">
-              {formData.employeeId}
-            </p>
+            <p className="rounded border bg-gray-100 p-2 text-gray-600">{formData.employeeId}</p>
           </div>
 
           {/* Name */}
@@ -176,7 +159,7 @@ const EditEmployeeDialog: React.FC<Props> = ({ employee, onUpdated }) => {
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" className="w-full justify-start">
-                  {birthDate ? format(birthDate, "PPP") : "Pick a date"}
+                  {birthDate ? format(birthDate, 'PPP') : 'Pick a date'}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="p-0">
@@ -185,9 +168,7 @@ const EditEmployeeDialog: React.FC<Props> = ({ employee, onUpdated }) => {
                   selected={birthDate}
                   onSelect={setBirthDate}
                   disabled={(date) => date > cutoff}
-                  defaultMonth={
-                    formData.birthDate ? parseISO(formData.birthDate) : cutoff
-                  }
+                  defaultMonth={formData.birthDate ? parseISO(formData.birthDate) : cutoff}
                   captionLayout="dropdown"
                 />
               </PopoverContent>
@@ -200,7 +181,7 @@ const EditEmployeeDialog: React.FC<Props> = ({ employee, onUpdated }) => {
         </form>
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};
 
-export default EditEmployeeDialog
+export default EditEmployeeDialog;

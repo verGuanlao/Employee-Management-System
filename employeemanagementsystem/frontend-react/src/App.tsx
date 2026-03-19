@@ -1,8 +1,8 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
-import EmployeesPage from "./pages/EmployeesPage"
-import DepartmentsPage from "./pages/DepartmentsPage"
-import LoginPage from "./pages/LoginPage"
-import PrivateRoute from "./auth/PrivateRoute"
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import EmployeesPage from './pages/EmployeesPage';
+import DepartmentsPage from './pages/DepartmentsPage';
+import LoginPage from './pages/LoginPage';
+import PrivateRoute from './auth/PrivateRoute';
 
 export function App() {
   return (
@@ -28,7 +28,7 @@ export function App() {
         />
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;

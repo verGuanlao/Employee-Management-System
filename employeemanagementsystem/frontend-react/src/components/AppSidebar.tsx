@@ -4,18 +4,18 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarHeader,
-} from "@/components/ui/sidebar"
-import { Link, useNavigate } from "react-router-dom"
-import { Button } from "./ui/button"
-import { logout } from "@/auth/authService"
+} from '@/components/ui/sidebar';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button } from './ui/button';
+import { logout } from '@/auth/authService';
 
 export function AppSidebar() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout()
-    navigate("/login")
-  }
+    logout();
+    navigate('/login');
+  };
 
   return (
     <Sidebar className="border-r bg-white">
@@ -64,5 +64,5 @@ export function AppSidebar() {
         </Button>
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

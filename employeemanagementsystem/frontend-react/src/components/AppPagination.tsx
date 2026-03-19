@@ -6,19 +6,15 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"
+} from '@/components/ui/pagination';
 
 interface AppPaginationProps {
-  page: number
-  totalPages: number
-  onPageChange: (page: number) => void
+  page: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
 }
 
-export function AppPagination({
-  page,
-  totalPages,
-  onPageChange,
-}: AppPaginationProps) {
+export function AppPagination({ page, totalPages, onPageChange }: AppPaginationProps) {
   return (
     <Pagination>
       <PaginationContent>
@@ -26,8 +22,8 @@ export function AppPagination({
           <PaginationPrevious
             href="#"
             onClick={(e) => {
-              e.preventDefault()
-              if (page > 0) onPageChange(page - 1)
+              e.preventDefault();
+              if (page > 0) onPageChange(page - 1);
             }}
           />
         </PaginationItem>
@@ -38,8 +34,8 @@ export function AppPagination({
               href="#"
               isActive={i === page}
               onClick={(e) => {
-                e.preventDefault()
-                onPageChange(i)
+                e.preventDefault();
+                onPageChange(i);
               }}
             >
               {i + 1}
@@ -53,12 +49,12 @@ export function AppPagination({
           <PaginationNext
             href="#"
             onClick={(e) => {
-              e.preventDefault()
-              if (page < totalPages - 1) onPageChange(page + 1)
+              e.preventDefault();
+              if (page < totalPages - 1) onPageChange(page + 1);
             }}
           />
         </PaginationItem>
       </PaginationContent>
     </Pagination>
-  )
+  );
 }

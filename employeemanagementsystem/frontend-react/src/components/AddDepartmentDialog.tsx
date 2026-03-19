@@ -1,37 +1,29 @@
-import { useState } from "react"
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import {
-  addDepartment,
-  type ApiResponse,
-  type DepartmentDTO,
-} from "@/lib/utils"
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { addDepartment, type ApiResponse, type DepartmentDTO } from '@/lib/utils';
 
-export default function AddDepartmentDialog({
-  onAdded,
-}: {
-  onAdded: () => void
-}) {
-  const [open, setOpen] = useState(false)
-  const [name, setName] = useState("")
+export default function AddDepartmentDialog({ onAdded }: { onAdded: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState('');
 
   const handleAdd = async () => {
-    const dto: DepartmentDTO = { departmentId: null, departmentName: name }
-    const res: ApiResponse<DepartmentDTO> = await addDepartment(dto)
-    if (res.status === "success") {
-      setOpen(false)
-      onAdded()
+    const dto: DepartmentDTO = { departmentId: null, departmentName: name };
+    const res: ApiResponse<DepartmentDTO> = await addDepartment(dto);
+    if (res.status === 'success') {
+      setOpen(false);
+      onAdded();
     } else {
-      alert(res.message ?? "Error adding department")
+      alert(res.message ?? 'Error adding department');
     }
-  }
+  };
 
   return (
     <>
@@ -52,5 +44,5 @@ export default function AddDepartmentDialog({
         </DialogContent>
       </Dialog>
     </>
-  )
+  );
 }

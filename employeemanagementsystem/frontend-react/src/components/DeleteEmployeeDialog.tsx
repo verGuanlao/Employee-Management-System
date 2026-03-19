@@ -5,25 +5,25 @@ import {
   DialogTitle,
   DialogFooter,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { useState } from "react"
-import { type EmployeeDTO, deleteEmployee } from "@/lib/utils"
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { useState } from 'react';
+import { type EmployeeDTO, deleteEmployee } from '@/lib/utils';
 
 interface Props {
-  employee: EmployeeDTO
-  onDeleted?: () => void // callback to refresh list/stats
+  employee: EmployeeDTO;
+  onDeleted?: () => void; // callback to refresh list/stats
 }
 
 const DeleteEmployeeDialog: React.FC<Props> = ({ employee, onDeleted }) => {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   const handleDelete = async () => {
     // ✅ pass the full DTO, not just the ID
-    await deleteEmployee(employee)
-    setOpen(false)
-    if (onDeleted) onDeleted()
-  }
+    await deleteEmployee(employee);
+    setOpen(false);
+    if (onDeleted) onDeleted();
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -52,7 +52,7 @@ const DeleteEmployeeDialog: React.FC<Props> = ({ employee, onDeleted }) => {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};
 
-export default DeleteEmployeeDialog
+export default DeleteEmployeeDialog;

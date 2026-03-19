@@ -1,30 +1,24 @@
 // src/pages/LoginPage.tsx
-import { useState } from "react"
-import { login } from "../auth/authService"
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
+import { useState } from 'react';
+import { login } from '../auth/authService';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 
 export default function LoginPage() {
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      await login(username, password)
-      window.location.href = "/employees"
+      await login(username, password);
+      window.location.href = '/employees';
     } catch {
-      alert("Invalid credentials")
+      alert('Invalid credentials');
     }
-  }
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
@@ -35,9 +29,7 @@ export default function LoginPage() {
             alt="Employee Portal Logo"
             className="h-24 w-auto"
           />
-          <CardTitle className="text-center text-2xl font-bold">
-            Login
-          </CardTitle>
+          <CardTitle className="text-center text-2xl font-bold">Login</CardTitle>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
@@ -71,5 +63,5 @@ export default function LoginPage() {
         </form>
       </Card>
     </div>
-  )
+  );
 }

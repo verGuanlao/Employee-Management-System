@@ -5,70 +5,62 @@ import {
   DialogTitle,
   DialogFooter,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Calendar } from "@/components/ui/calendar"
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover"
-import { format } from "date-fns"
-import { useState, useEffect } from "react"
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { format } from 'date-fns';
+import { useState, useEffect } from 'react';
 import {
   addEmployee,
   fetchDepartments,
   type DepartmentDTO,
   type ApiResponse,
   type Page,
-} from "@/lib/utils"
+} from '@/lib/utils';
 
 interface Props {
-  onUpdated?: () => void
+  onUpdated?: () => void;
 }
 
 export default function AddEmployeeDialog({ onUpdated }: Props) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [name, setName] = useState("")
-  const [salary, setSalary] = useState<number | "">("")
-  const [birthDate, setBirthDate] = useState<Date | undefined>(undefined)
-  const [departments, setDepartments] = useState<DepartmentDTO[]>([])
-  const [selectedDept, setSelectedDept] = useState<string>("")
+  const [isOpen, setIsOpen] = useState(false);
+  const [name, setName] = useState('');
+  const [salary, setSalary] = useState<number | ''>('');
+  const [birthDate, setBirthDate] = useState<Date | undefined>(undefined);
+  const [departments, setDepartments] = useState<DepartmentDTO[]>([]);
+  const [selectedDept, setSelectedDept] = useState<string>('');
 
   // Calculate cutoff date for 18 years old
-  const today = new Date()
-  const cutoff = new Date(
-    today.getFullYear() - 18,
-    today.getMonth(),
-    today.getDate()
-  )
+  const today = new Date();
+  const cutoff = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
 
   useEffect(() => {
     async function loadDepartments() {
       const res: ApiResponse<Page<DepartmentDTO>> = await fetchDepartments({
         page: 0,
         size: 50,
-      })
-      if (res.status === "success") {
-        setDepartments(res.data.content)
+      });
+      if (res.status === 'success') {
+        setDepartments(res.data.content);
       }
     }
-    loadDepartments()
-  }, [])
+    loadDepartments();
+  }, []);
 
   const handleSubmit = async () => {
     if (!name || !birthDate || !salary || !selectedDept) {
-      alert("Please fill out all fields before saving.")
-      return
+      alert('Please fill out all fields before saving.');
+      return;
     }
 
     if (salary <= 0) {
-      alert("Salary must be a positive number.")
-      return
+      alert('Salary must be a positive number.');
+      return;
     }
 
-    const birthDateString = format(birthDate, "yyyy-MM-dd")
+    const birthDateString = format(birthDate, 'yyyy-MM-dd');
 
     await addEmployee({
       employeeId: null,
@@ -76,17 +68,17 @@ export default function AddEmployeeDialog({ onUpdated }: Props) {
       birthDate: birthDateString,
       salary: Number(salary),
       department: selectedDept,
-    })
+    });
 
     // reset form
-    setName("")
-    setSalary("")
-    setBirthDate(undefined)
-    setSelectedDept("")
-    setIsOpen(false)
+    setName('');
+    setSalary('');
+    setBirthDate(undefined);
+    setSelectedDept('');
+    setIsOpen(false);
 
-    if (onUpdated) onUpdated()
-  }
+    if (onUpdated) onUpdated();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -138,9 +130,7 @@ export default function AddEmployeeDialog({ onUpdated }: Props) {
               type="number"
               min="1"
               value={salary}
-              onChange={(e) =>
-                setSalary(e.target.value ? Number(e.target.value) : "")
-              }
+              onChange={(e) => setSalary(e.target.value ? Number(e.target.value) : '')}
             />
           </div>
 
@@ -153,7 +143,7 @@ export default function AddEmployeeDialog({ onUpdated }: Props) {
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" className="w-full justify-start">
-                  {birthDate ? format(birthDate, "PPP") : "Pick a date"}
+                  {birthDate ? format(birthDate, 'PPP') : 'Pick a date'}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="p-0">
@@ -175,5 +165,5 @@ export default function AddEmployeeDialog({ onUpdated }: Props) {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

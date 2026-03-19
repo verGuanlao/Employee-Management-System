@@ -1,36 +1,32 @@
-import { useState } from "react"
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import {
-  deleteDepartment,
-  type ApiResponse,
-  type DepartmentDTO,
-} from "@/lib/utils"
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { deleteDepartment, type ApiResponse, type DepartmentDTO } from '@/lib/utils';
 
 export default function DeleteDepartmentDialog({
   department,
   onDeleted,
 }: {
-  department: DepartmentDTO
-  onDeleted: () => void
+  department: DepartmentDTO;
+  onDeleted: () => void;
 }) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   const handleDelete = async () => {
-    const res: ApiResponse<DepartmentDTO> = await deleteDepartment(department)
-    if (res.status === "success") {
-      setOpen(false)
-      onDeleted()
+    const res: ApiResponse<DepartmentDTO> = await deleteDepartment(department);
+    if (res.status === 'success') {
+      setOpen(false);
+      onDeleted();
     } else {
-      alert(res.message ?? "Error deleting department")
+      alert(res.message ?? 'Error deleting department');
     }
-  }
+  };
 
   return (
     <>
@@ -51,5 +47,5 @@ export default function DeleteDepartmentDialog({
         </DialogContent>
       </Dialog>
     </>
-  )
+  );
 }

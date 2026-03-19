@@ -1,42 +1,37 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import DashboardLayout from "@/layouts/DashboardLayout"
-import { useEffect, useState } from "react"
-import {
-  searchDepartments,
-  type DepartmentDTO,
-  type Page,
-  type ApiResponse,
-} from "@/lib/utils"
-import AddDepartmentDialog from "@/components/AddDepartmentDialog"
-import EditDepartmentDialog from "@/components/EditDepartmentDialog"
-import DeleteDepartmentDialog from "@/components/DeleteDepartmentDialog"
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import DashboardLayout from '@/layouts/DashboardLayout';
+import { useEffect, useState } from 'react';
+import { searchDepartments, type DepartmentDTO, type Page, type ApiResponse } from '@/lib/utils';
+import AddDepartmentDialog from '@/components/AddDepartmentDialog';
+import EditDepartmentDialog from '@/components/EditDepartmentDialog';
+import DeleteDepartmentDialog from '@/components/DeleteDepartmentDialog';
 
 const DepartmentsPage = () => {
-  const [departments, setDepartments] = useState<DepartmentDTO[]>([])
-  const [searchQuery, setSearchQuery] = useState("")
-  const [page, setPage] = useState(0)
-  const [totalPages, setTotalPages] = useState(1)
+  const [departments, setDepartments] = useState<DepartmentDTO[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   const loadDepartments = async () => {
     const res: ApiResponse<Page<DepartmentDTO>> =
-      searchQuery.trim() !== ""
+      searchQuery.trim() !== ''
         ? await searchDepartments(searchQuery, { page, size: 5 })
-        : await searchDepartments("", { page, size: 5 })
+        : await searchDepartments('', { page, size: 5 });
 
-    if (res.status === "success") {
-      setDepartments(res.data.content)
-      setTotalPages(res.data.totalPages)
+    if (res.status === 'success') {
+      setDepartments(res.data.content);
+      setTotalPages(res.data.totalPages);
     } else {
-      alert(res.message ?? "Error loading departments")
+      alert(res.message ?? 'Error loading departments');
     }
-  }
+  };
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      loadDepartments()
-    }, 300) // debounce
-    return () => clearTimeout(timeout)
-  }, [searchQuery, page])
+      loadDepartments();
+    }, 300); // debounce
+    return () => clearTimeout(timeout);
+  }, [searchQuery, page]);
 
   return (
     <DashboardLayout page={page} totalPages={totalPages} onPageChange={setPage}>
@@ -53,28 +48,19 @@ const DepartmentsPage = () => {
               className="w-full rounded border p-2"
               value={searchQuery}
               onChange={(e) => {
-                setSearchQuery(e.target.value)
-                setPage(0)
+                setSearchQuery(e.target.value);
+                setPage(0);
               }}
             />
           </div>
 
           <ul className="divide-y">
             {departments.map((dept) => (
-              <li
-                key={dept.departmentId}
-                className="flex items-center justify-between py-2"
-              >
+              <li key={dept.departmentId} className="flex items-center justify-between py-2">
                 <span>{dept.departmentName}</span>
                 <div className="flex gap-2">
-                  <EditDepartmentDialog
-                    department={dept}
-                    onUpdated={loadDepartments}
-                  />
-                  <DeleteDepartmentDialog
-                    department={dept}
-                    onDeleted={loadDepartments}
-                  />
+                  <EditDepartmentDialog department={dept} onUpdated={loadDepartments} />
+                  <DeleteDepartmentDialog department={dept} onDeleted={loadDepartments} />
                 </div>
               </li>
             ))}
@@ -82,7 +68,7 @@ const DepartmentsPage = () => {
         </CardContent>
       </Card>
     </DashboardLayout>
-  )
-}
+  );
+};
 
-export default DepartmentsPage
+export default DepartmentsPage;
