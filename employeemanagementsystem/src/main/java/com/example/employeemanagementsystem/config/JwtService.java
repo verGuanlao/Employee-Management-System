@@ -4,15 +4,21 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class JwtService {
-    private final String secret = "dGhpcyBpcyBhIHNlY3VyZSBlbm91Z2gga2V5IGZvciBIUzI1Ng==";
+    @Value("${jwt.secret}")
+    private String secret;
+
+    @Value("${jwt.access-token-expiration}")
+    private long tokenValidityMilliseconds;
 
 
     private SecretKey getSigningKey() {
@@ -28,12 +34,17 @@ public class JwtService {
                 .getBody();
     }
 
+    public List<String> extractRoles(String token) {
+        Claims claims = extractClaims(token);
+        return claims.get("roles", List.class); // roles stored in JWT payload
+    }
+
     public String generateToken(String username, String role) {
         return Jwts.builder()
                 .setSubject(username)
                 .claim("role", role)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 86400000))
+                .setExpiration(new Date(System.currentTimeMillis() + tokenValidityMilliseconds))
                 .signWith(getSigningKey())
                 .compact();
     }
