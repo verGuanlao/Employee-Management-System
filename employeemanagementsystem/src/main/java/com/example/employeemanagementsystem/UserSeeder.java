@@ -21,7 +21,7 @@ public class UserSeeder {
                 UserDTO admin = new UserDTO();
                 admin.setUsername("admin");
                 admin.setPassword("harderpassword"); // will be hashed by registerUser
-                admin.setRole("ROLE_ADMIN");
+                admin.setRole("ADMIN");
 
                 userService.registerUser(admin);
 
@@ -29,7 +29,7 @@ public class UserSeeder {
                 UserDTO user = new UserDTO();
                 user.setUsername("user");
                 user.setPassword("password");
-                user.setRole("ROLE_USER");
+                user.setRole("USER");
 
                 userService.registerUser(user);
 
