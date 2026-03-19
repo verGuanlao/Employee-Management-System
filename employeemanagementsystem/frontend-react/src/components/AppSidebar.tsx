@@ -7,10 +7,11 @@ import {
 } from '@/components/ui/sidebar';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
-import { logout } from '@/auth/authService';
+import { getUserRole, logout } from '@/auth/authService';
 
 export function AppSidebar() {
   const navigate = useNavigate();
+  const role = getUserRole();
 
   const handleLogout = () => {
     logout();
@@ -50,6 +51,18 @@ export function AppSidebar() {
                   </Button>
                 </Link>
               </li>
+              {role === 'ADMIN' && (
+                <li>
+                  <Link to="/users">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-100"
+                    >
+                      Users
+                    </Button>
+                  </Link>
+                </li>
+              )}
             </ul>
           </nav>
         </SidebarGroup>

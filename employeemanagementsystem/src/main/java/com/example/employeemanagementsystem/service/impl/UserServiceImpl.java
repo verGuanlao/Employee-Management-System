@@ -124,14 +124,12 @@ public class UserServiceImpl implements UserService {
                     .orElseThrow(() -> new UserNotFoundException(userDTO.getUserId()));
         }
 
-        if (ruleSet.contains(CHECK_DUPLICATE_NAME)){
-            Long userId = getByUsername(userDTO.getUsername()).getUserId();
-            if (userId == null || userId == userDTO.getUserId()) {
-                return;
-            } else if (userRepository.existsByUsername(userDTO.getUsername())) {
+        if (ruleSet.contains(CHECK_DUPLICATE_NAME)) {
+            User existingUser = userRepository.findByUsername(userDTO.getUsername()).orElse(null);
+
+            if (existingUser != null && !existingUser.getUserId().equals(userDTO.getUserId())) {
                 throw new UserAlreadyExistsException(userDTO.getUsername());
             }
         }
-
     }
 }
