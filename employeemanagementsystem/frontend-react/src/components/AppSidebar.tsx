@@ -21,11 +21,9 @@ export function AppSidebar() {
   return (
     <Sidebar className="border-r bg-white">
       <SidebarHeader className="flex items-center justify-start px-4 py-6">
-        <img
-          src="/public/logo.svg" // adjust path to your logo file
-          alt="Employee Portal Logo"
-          className="h-12 w-auto"
-        />
+        <Link to="/login">
+          <img src="/logo.svg" alt="Employee Portal Logo" className="h-12 w-auto cursor-pointer" />
+        </Link>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup className="px-2">

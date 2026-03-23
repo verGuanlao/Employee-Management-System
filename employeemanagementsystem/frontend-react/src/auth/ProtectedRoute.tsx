@@ -8,7 +8,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ allowedRoles, children }: ProtectedRouteProps) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('accessToken');
   const role = getUserRole();
 
   if (!token) return <Navigate to="/login" replace />;

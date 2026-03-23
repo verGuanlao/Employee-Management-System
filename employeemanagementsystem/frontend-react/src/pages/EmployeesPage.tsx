@@ -154,10 +154,7 @@ const EmployeesPage = () => {
               >
                 <option value="">All Departments</option>
                 {departments.map((dept) => (
-                  <option
-                    key={dept.departmentId}
-                    value={dept.departmentName ? dept.departmentName : ''}
-                  >
+                  <option key={dept.departmentId} value={dept.departmentId}>
                     {dept.departmentName}
                   </option>
                 ))}

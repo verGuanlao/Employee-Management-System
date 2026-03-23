@@ -6,12 +6,14 @@ import AddDepartmentDialog from '@/components/AddDepartmentDialog';
 import EditDepartmentDialog from '@/components/EditDepartmentDialog';
 import DeleteDepartmentDialog from '@/components/DeleteDepartmentDialog';
 import { toast } from 'sonner';
+import { getUserRole } from '@/auth/authService';
 
 const DepartmentsPage = () => {
   const [departments, setDepartments] = useState<DepartmentDTO[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const role = getUserRole();
 
   const loadDepartments = async () => {
     const res: ApiResponse<Page<DepartmentDTO>> =
@@ -59,10 +61,12 @@ const DepartmentsPage = () => {
             {departments.map((dept) => (
               <li key={dept.departmentId} className="flex items-center justify-between py-2">
                 <span>{dept.departmentName}</span>
-                <div className="flex gap-2">
-                  <EditDepartmentDialog department={dept} onUpdated={loadDepartments} />
-                  <DeleteDepartmentDialog department={dept} onDeleted={loadDepartments} />
-                </div>
+                {role === 'ADMIN' && (
+                  <div className="flex gap-2">
+                    <EditDepartmentDialog department={dept} onUpdated={loadDepartments} />
+                    <DeleteDepartmentDialog department={dept} onDeleted={loadDepartments} />
+                  </div>
+                )}
               </li>
             ))}
           </ul>
