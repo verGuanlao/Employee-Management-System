@@ -1,7 +1,9 @@
 package com.example.employeemanagementsystem.exception;
 
+import com.example.employeemanagementsystem.component.MessageHelper;
+
 public class ImproperAgeException extends RuntimeException {
     public ImproperAgeException() {
-        super("Age must be above 18!");
+        super(MessageHelper.get("error.employee.underage"));
     }
 }

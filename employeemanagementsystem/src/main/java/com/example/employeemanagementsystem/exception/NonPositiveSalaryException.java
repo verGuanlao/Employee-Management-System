@@ -1,7 +1,9 @@
 package com.example.employeemanagementsystem.exception;
 
+import com.example.employeemanagementsystem.component.MessageHelper;
+
 public class NonPositiveSalaryException extends RuntimeException {
     public NonPositiveSalaryException() {
-        super("Salary must be a positive number");
+        super(MessageHelper.get("error.salary.non.positive"));
     }
 }

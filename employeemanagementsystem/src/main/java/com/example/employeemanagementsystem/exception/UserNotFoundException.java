@@ -1,11 +1,12 @@
 package com.example.employeemanagementsystem.exception;
 
-public class UserNotFoundException extends RuntimeException {
-    public UserNotFoundException(Long userId) {
-        super("User with id " +  userId + " not found");
-    }
+import com.example.employeemanagementsystem.component.MessageHelper;
 
+public class UserNotFoundException extends RuntimeException {
+    public UserNotFoundException(Long id) {
+        super(MessageHelper.get("error.user.not.found.id", id));
+    }
     public UserNotFoundException(String username) {
-        super("User with name " + username + " not found");
+        super(MessageHelper.get("error.user.not.found.name", username));
     }
 }

@@ -1,7 +1,9 @@
 package com.example.employeemanagementsystem.exception;
 
+import com.example.employeemanagementsystem.component.MessageHelper;
+
 public class InvalidDepartmentDeleteException extends RuntimeException {
-    public InvalidDepartmentDeleteException(Long departmentId) {
-        super("The department with id " + departmentId + " has existing employees");
+    public InvalidDepartmentDeleteException(Long id) {
+        super(MessageHelper.get("error.department.has.employees", id));
     }
 }

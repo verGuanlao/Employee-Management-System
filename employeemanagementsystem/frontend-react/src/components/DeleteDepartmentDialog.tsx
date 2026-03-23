@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { deleteDepartment, type ApiResponse, type DepartmentDTO } from '@/lib/utils';
+import { toast } from 'sonner';
 
 export default function DeleteDepartmentDialog({
   department,
@@ -23,8 +24,9 @@ export default function DeleteDepartmentDialog({
     if (res.status === 'success') {
       setOpen(false);
       onDeleted();
+      toast.success(res.message ?? 'Department deleted successfully');
     } else {
-      alert(res.message ?? 'Error deleting department');
+      toast.error(res.message ?? 'Error deleting department');
     }
   };
 
@@ -38,7 +40,10 @@ export default function DeleteDepartmentDialog({
           <DialogHeader>
             <DialogTitle>Delete Department</DialogTitle>
           </DialogHeader>
-          <p>Are you sure you want to delete {department.departmentName}?</p>
+          <p>
+            Are you sure you want to delete{' '}
+            <span className="font-semibold">{department.departmentName}?</span>
+          </p>
           <DialogFooter>
             <Button variant="destructive" onClick={handleDelete}>
               Confirm

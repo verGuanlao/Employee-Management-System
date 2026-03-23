@@ -66,14 +66,24 @@ export async function fetchEmployees(
     size?: number;
   } = {}
 ): Promise<ApiResponse<EmployeeStatsResponse>> {
-  const response = await api.get<ApiResponse<EmployeeStatsResponse>>(EMPLOYEE_API_URL, { params });
-  return response.data;
+  try {
+    const response = await api.get<ApiResponse<EmployeeStatsResponse>>(EMPLOYEE_API_URL, {
+      params,
+    });
+    return response.data;
+  } catch (error: any) {
+    return error.response?.data as ApiResponse<EmployeeStatsResponse>;
+  }
 }
 
 // Fetch employee by ID
 export async function fetchEmployeeById(employeeId: number): Promise<ApiResponse<EmployeeDTO>> {
-  const response = await api.get<ApiResponse<EmployeeDTO>>(`${EMPLOYEE_API_URL}/${employeeId}`);
-  return response.data;
+  try {
+    const response = await api.get<ApiResponse<EmployeeDTO>>(`${EMPLOYEE_API_URL}/${employeeId}`);
+    return response.data;
+  } catch (error: any) {
+    return error.response?.data as ApiResponse<EmployeeDTO>;
+  }
 }
 
 // Search employees by name
@@ -81,38 +91,63 @@ export async function searchEmployees(
   query: string,
   params: { page?: number; size?: number } = {}
 ): Promise<ApiResponse<EmployeeStatsResponse>> {
-  const response = await api.get<ApiResponse<EmployeeStatsResponse>>(`${EMPLOYEE_API_URL}/search`, {
-    params: { query, ...params },
-  });
-  return response.data;
+  try {
+    const response = await api.get<ApiResponse<EmployeeStatsResponse>>(
+      `${EMPLOYEE_API_URL}/search`,
+      {
+        params: { query, ...params },
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    return error.response?.data as ApiResponse<EmployeeStatsResponse>;
+  }
 }
 
 // Add employee
 export async function addEmployee(employeeDTO: EmployeeDTO): Promise<ApiResponse<EmployeeDTO>> {
-  const response = await api.post<ApiResponse<EmployeeDTO>>(EMPLOYEE_API_URL, employeeDTO);
-  return response.data;
+  try {
+    const response = await api.post<ApiResponse<EmployeeDTO>>(EMPLOYEE_API_URL, employeeDTO);
+    return response.data;
+  } catch (error: any) {
+    return error.response?.data as ApiResponse<EmployeeDTO>;
+  }
 }
 
 // Update employee
 export async function updateEmployee(employeeDTO: EmployeeDTO): Promise<ApiResponse<EmployeeDTO>> {
-  const response = await api.put<ApiResponse<EmployeeDTO>>(EMPLOYEE_API_URL, employeeDTO);
-  return response.data;
+  try {
+    const response = await api.put<ApiResponse<EmployeeDTO>>(EMPLOYEE_API_URL, employeeDTO);
+    return response.data;
+  } catch (error: any) {
+    return error.response?.data as ApiResponse<EmployeeDTO>;
+  }
 }
 
 // Delete employee
 export async function deleteEmployee(employeeDTO: EmployeeDTO): Promise<ApiResponse<EmployeeDTO>> {
-  const response = await api.delete<ApiResponse<EmployeeDTO>>(EMPLOYEE_API_URL, {
-    data: employeeDTO,
-  });
-  return response.data;
+  try {
+    const response = await api.delete<ApiResponse<EmployeeDTO>>(EMPLOYEE_API_URL, {
+      data: employeeDTO,
+    });
+    return response.data;
+  } catch (error: any) {
+    return error.response?.data as ApiResponse<EmployeeDTO>;
+  }
 }
 
 // Fetch departments
 export async function fetchDepartments(
   params: { page?: number; size?: number } = {}
 ): Promise<ApiResponse<Page<DepartmentDTO>>> {
-  const response = await api.get<ApiResponse<Page<DepartmentDTO>>>(DEPARTMENT_API_URL, { params });
-  return response.data;
+  try {
+    const response = await api.get<ApiResponse<Page<DepartmentDTO>>>(DEPARTMENT_API_URL, {
+      params,
+    });
+    return response.data;
+  } catch (error: any) {
+    return error.response?.data as ApiResponse<Page<DepartmentDTO>>;
+  }
 }
 
 // Search departments
@@ -120,10 +155,17 @@ export async function searchDepartments(
   query: string,
   params: { page?: number; size?: number } = {}
 ): Promise<ApiResponse<Page<DepartmentDTO>>> {
-  const response = await api.get<ApiResponse<Page<DepartmentDTO>>>(`${DEPARTMENT_API_URL}/search`, {
-    params: { query, ...params },
-  });
-  return response.data;
+  try {
+    const response = await api.get<ApiResponse<Page<DepartmentDTO>>>(
+      `${DEPARTMENT_API_URL}/search`,
+      {
+        params: { query, ...params },
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    return error.response?.data as ApiResponse<Page<DepartmentDTO>>;
+  }
 }
 
 // Add Department

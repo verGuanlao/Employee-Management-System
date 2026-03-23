@@ -1,16 +1,13 @@
 package com.example.employeemanagementsystem.exception;
 
+import com.example.employeemanagementsystem.component.MessageHelper;
+
 public class EmployeeNotFoundException extends RuntimeException {
     public EmployeeNotFoundException(Long id) {
-
-        super("Employee with ID " + id + " not found");
+        super(MessageHelper.get("error.employee.not.found.id", id));
     }
 
     public EmployeeNotFoundException(String name) {
-        super("Employee with name " + name + " not found");
-    }
-
-    public EmployeeNotFoundException() {
-        super("Employee fields are missing");
+        super(MessageHelper.get("error.employee.not.found.name", name));
     }
 }

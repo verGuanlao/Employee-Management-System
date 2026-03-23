@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface DepartmentService {
+    public boolean departmentExistsByName(String name);
     public DepartmentDTO getDepartmentName(Long id);
     public DepartmentDTO getDepartmentId(String name);
     public Page<DepartmentDTO> getDepartments(Pageable pageable);

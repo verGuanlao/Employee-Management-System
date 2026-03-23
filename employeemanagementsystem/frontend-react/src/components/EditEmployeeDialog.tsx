@@ -1,6 +1,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -18,6 +19,7 @@ import {
   type ApiResponse,
   type Page,
 } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface Props {
   employee: EmployeeDTO;
@@ -26,19 +28,15 @@ interface Props {
 
 const EditEmployeeDialog: React.FC<Props> = ({ employee, onUpdated }) => {
   const [open, setOpen] = useState(false);
-
-  // convert existing birthDate string to Date
   const [birthDate, setBirthDate] = useState<Date | undefined>(
     employee.birthDate ? parseISO(employee.birthDate) : undefined
   );
   const [formData, setFormData] = useState<EmployeeDTO>(employee);
-
   const [departments, setDepartments] = useState<DepartmentDTO[]>([]);
+  const [msg, setMsg] = useState(''); // ✅ added
 
-  // Calculate cutoff date for 18 years old
   const today = new Date();
   const cutoff = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
-  const cutoffISO = cutoff.toISOString().split('T')[0]; // format YYYY-MM-DD
 
   useEffect(() => {
     async function loadDepartments() {
@@ -48,6 +46,8 @@ const EditEmployeeDialog: React.FC<Props> = ({ employee, onUpdated }) => {
       });
       if (res.status === 'success') {
         setDepartments(res.data.content);
+      } else {
+        setMsg(res.message ?? 'Failed to load departments');
       }
     }
     loadDepartments();
@@ -59,30 +59,35 @@ const EditEmployeeDialog: React.FC<Props> = ({ employee, onUpdated }) => {
   };
 
   const handleSubmit = async () => {
-    if (!formData.name || !birthDate || !formData.salary || !formData.department) {
-      alert('Please fill out all fields before saving.');
-      return;
-    }
+    setMsg('');
 
-    if (formData.salary <= 0) {
-      alert('Salary must be a positive number.');
-      return;
-    }
-
-    const birthDateString = format(birthDate, 'yyyy-MM-dd');
-
-    await updateEmployee({
+    const res: ApiResponse<EmployeeDTO> = await updateEmployee({
       ...formData,
-      birthDate: birthDateString,
+      birthDate: birthDate ? format(birthDate, 'yyyy-MM-dd') : '',
       employeeId: formData.employeeId,
     });
 
-    setOpen(false);
-    if (onUpdated) onUpdated();
+    if (res.status === 'success') {
+      setOpen(false);
+      onUpdated?.();
+      toast.success(res.message ?? 'Employee updated successfully');
+    } else {
+      setMsg(res.message ?? 'Failed to update employee');
+    }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        if (isOpen) {
+          setFormData(employee);
+          setBirthDate(employee.birthDate ? parseISO(employee.birthDate) : undefined);
+          setMsg('');
+        }
+        setOpen(isOpen);
+      }}
+    >
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
           Edit
@@ -93,17 +98,14 @@ const EditEmployeeDialog: React.FC<Props> = ({ employee, onUpdated }) => {
           <DialogTitle>Edit Employee</DialogTitle>
         </DialogHeader>
         <form className="grid gap-4">
-          {/* Employee ID (read-only) */}
           <div>
             <label className="mb-1 block font-medium">Employee ID</label>
             <p className="rounded border bg-gray-100 p-2 text-gray-600">{formData.employeeId}</p>
           </div>
 
-          {/* Name */}
           <div>
             <label className="mb-1 block font-medium">
-              Name
-              <span className="ml-1 text-red-500">*</span>
+              Name <span className="ml-1 text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -114,11 +116,9 @@ const EditEmployeeDialog: React.FC<Props> = ({ employee, onUpdated }) => {
             />
           </div>
 
-          {/* Department Dropdown */}
           <div>
             <label className="mb-1 block font-medium">
-              Department
-              <span className="ml-1 text-red-500">*</span>
+              Department <span className="ml-1 text-red-500">*</span>
             </label>
             <select
               name="department"
@@ -128,18 +128,19 @@ const EditEmployeeDialog: React.FC<Props> = ({ employee, onUpdated }) => {
             >
               <option value="">Select Department</option>
               {departments.map((dept) => (
-                <option key={dept.departmentId} value={dept.departmentName}>
+                <option
+                  key={dept.departmentId}
+                  value={dept.departmentName ? dept.departmentName : ''}
+                >
                   {dept.departmentName}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Salary */}
           <div>
             <label className="mb-1 block font-medium">
-              Salary
-              <span className="ml-1 text-red-500">*</span>
+              Salary <span className="ml-1 text-red-500">*</span>
             </label>
             <input
               type="number"
@@ -150,11 +151,9 @@ const EditEmployeeDialog: React.FC<Props> = ({ employee, onUpdated }) => {
             />
           </div>
 
-          {/* Birthdate with Calendar */}
           <div>
             <label className="mb-1 block font-medium">
-              Birthdate
-              <span className="ml-1 text-red-500">*</span>
+              Birthdate <span className="ml-1 text-red-500">*</span>
             </label>
             <Popover>
               <PopoverTrigger asChild>
@@ -175,10 +174,13 @@ const EditEmployeeDialog: React.FC<Props> = ({ employee, onUpdated }) => {
             </Popover>
           </div>
 
+          {msg && <p className="text-sm text-red-500">{msg}</p>}
+        </form>
+        <DialogFooter>
           <Button type="button" onClick={handleSubmit}>
             Save Changes
           </Button>
-        </form>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

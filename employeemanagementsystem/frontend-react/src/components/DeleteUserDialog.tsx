@@ -9,6 +9,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 const DeleteUserDialog = ({ user, onDeleted }: { user: UserDTO; onDeleted: () => void }) => {
   const [open, setOpen] = useState(false);
@@ -19,13 +20,15 @@ const DeleteUserDialog = ({ user, onDeleted }: { user: UserDTO; onDeleted: () =>
     const res: ApiResponse<UserDTO> = await deleteUser({
       userId: user.userId,
       username: user.username,
+      password: '',
       role: user.role,
     });
     if (res.status === 'success') {
       setOpen(false);
       onDeleted();
+      toast.success(res.message ?? 'User deleted successfully');
     } else {
-      setError(res.message ?? 'Failed to delete user');
+      toast.error(res.message ?? 'Failed to delete user');
     }
   };
 
@@ -40,11 +43,9 @@ const DeleteUserDialog = ({ user, onDeleted }: { user: UserDTO; onDeleted: () =>
         <DialogHeader>
           <DialogTitle>Delete User</DialogTitle>
         </DialogHeader>
-        <p className="text-sm text-muted-foreground">
+        <p>
           Are you sure you want to delete <span className="font-semibold">{user.username}</span>?
-          This action cannot be undone.
         </p>
-        {error && <p className="text-sm text-red-500">{error}</p>}
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel

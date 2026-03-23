@@ -5,6 +5,7 @@ import { getAllUsers, type UserDTO, type Page, type ApiResponse } from '@/lib/ut
 import AddUserDialog from '@/components/AddUserDialog';
 import EditUserDialog from '@/components/EditUserDialog';
 import DeleteUserDialog from '@/components/DeleteUserDialog';
+import { toast } from 'sonner';
 
 const UsersPage = () => {
   const [users, setUsers] = useState<UserDTO[]>([]);
@@ -23,14 +24,14 @@ const UsersPage = () => {
       setUsers(res.data.content);
       setTotalPages(res.data.totalPages);
     } else {
-      alert(res.message ?? 'Error loading users');
+      toast.error(res.message ?? 'Error loading users');
     }
   };
 
   useEffect(() => {
     const timeout = setTimeout(() => {
       loadUsers();
-    }, 300);
+    }, 100);
     return () => clearTimeout(timeout);
   }, [searchQuery, page]);
 

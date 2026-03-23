@@ -1,5 +1,6 @@
 package com.example.employeemanagementsystem.service.impl;
 
+import com.example.employeemanagementsystem.component.MessageHelper;
 import com.example.employeemanagementsystem.config.JwtService;
 import com.example.employeemanagementsystem.dto.UserDTO;
 import com.example.employeemanagementsystem.exception.*;
@@ -96,7 +97,7 @@ public class UserServiceImpl implements UserService {
         if (passwordEncoder.matches(userDTO.getPassword(), dbUser.getPassword())) {
             return jwtService.generateToken(dbUser.getUsername(), dbUser.getRole());
         }
-        throw new BadCredentialsException("Wrong username or password");
+        throw new BadCredentialsException(MessageHelper.get("error.auth.bad.credentials"));
     }
 
     private void validateUser(UserDTO userDTO, ValidationRule... rules) {
@@ -104,19 +105,21 @@ public class UserServiceImpl implements UserService {
 
         if (ruleSet.contains(CHECK_USERNAME) &&
                 (userDTO.getUsername() == null || userDTO.getUsername().isBlank())) {
-            throw new MissingFieldsException("Username cannot be empty");
+            throw new MissingFieldsException(MissingFieldsException.USER_USERNAME);
         }
 
         if (ruleSet.contains(CHECK_ID) && userDTO.getUserId() == null) {
-            throw new MissingFieldsException("User Id cannot be empty");
+            throw new MissingFieldsException(MissingFieldsException.USER_ID);
         }
 
-        if(ruleSet.contains(CHECK_PASSWORD) && (userDTO.getPassword() == null || userDTO.getPassword().isBlank())) {
-            throw new MissingFieldsException("Password cannot be empty");
+        if (ruleSet.contains(CHECK_PASSWORD) &&
+                (userDTO.getPassword() == null || userDTO.getPassword().isBlank())) {
+            throw new MissingFieldsException(MissingFieldsException.USER_PASSWORD);
         }
 
-        if(ruleSet.contains(CHECK_ROLE) && (userDTO.getRole() == null || userDTO.getRole().isBlank())) {
-            throw new MissingFieldsException("Role cannot be empty");
+        if (ruleSet.contains(CHECK_ROLE) &&
+                (userDTO.getRole() == null || userDTO.getRole().isBlank())) {
+            throw new MissingFieldsException(MissingFieldsException.USER_ROLE);
         }
 
         if (ruleSet.contains(CHECK_EXISTS)) {
@@ -126,7 +129,6 @@ public class UserServiceImpl implements UserService {
 
         if (ruleSet.contains(CHECK_DUPLICATE_NAME)) {
             User existingUser = userRepository.findByUsername(userDTO.getUsername()).orElse(null);
-
             if (existingUser != null && !existingUser.getUserId().equals(userDTO.getUserId())) {
                 throw new UserAlreadyExistsException(userDTO.getUsername());
             }

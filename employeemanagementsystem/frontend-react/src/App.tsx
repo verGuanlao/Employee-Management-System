@@ -5,42 +5,46 @@ import LoginPage from './pages/LoginPage';
 import UsersPage from './pages/UsersPage';
 import ProtectedRoute from './auth/ProtectedRoute';
 import UnauthorizedPage from './pages/UnauthorizedPage';
+import { Toaster } from '@/components/ui/sonner';
 
 export function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
 
-        <Route
-          path="/employees"
-          element={
-            <ProtectedRoute>
-              <EmployeesPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/departments"
-          element={
-            <ProtectedRoute>
-              <DepartmentsPage />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/employees"
+            element={
+              <ProtectedRoute>
+                <EmployeesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/departments"
+            element={
+              <ProtectedRoute>
+                <DepartmentsPage />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/users"
-          element={
-            <ProtectedRoute allowedRoles={['ADMIN']}>
-              <UsersPage />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/users"
+            element={
+              <ProtectedRoute allowedRoles={['ADMIN']}>
+                <UsersPage />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route path="/unauthorized" element={<UnauthorizedPage />} />
-      </Routes>
-    </BrowserRouter>
+          <Route path="/unauthorized" element={<UnauthorizedPage />} />
+        </Routes>
+      </BrowserRouter>
+      <Toaster richColors position="bottom-right" />
+    </>
   );
 }
 

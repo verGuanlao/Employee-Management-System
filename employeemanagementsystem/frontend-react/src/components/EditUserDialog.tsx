@@ -18,15 +18,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { set } from 'date-fns';
 
 const EditUserDialog = ({ user, onUpdated }: { user: UserDTO; onUpdated: () => void }) => {
   const [open, setOpen] = useState(false);
   const [username, setUsername] = useState(user.username);
   const [role, setRole] = useState(user.role);
-  const [error, setError] = useState('');
+  const [msg, setMsg] = useState('');
 
   const handleSubmit = async () => {
-    setError('');
+    setMsg('');
     const res: ApiResponse<UserDTO> = await updateUser({
       userId: user.userId,
       username,
@@ -37,48 +38,56 @@ const EditUserDialog = ({ user, onUpdated }: { user: UserDTO; onUpdated: () => v
       setOpen(false);
       onUpdated();
     } else {
-      setError(res.message ?? 'Failed to update user');
+      setMsg(res.message ?? 'Failed to update user');
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          Edit
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Edit User</DialogTitle>
-        </DialogHeader>
-        <div className="flex flex-col gap-3 py-2">
-          <div className="flex flex-col gap-1">
-            <Label>Username</Label>
-            <Input value={username} onChange={(e) => setUsername(e.target.value)} />
+    <>
+      <Button
+        variant="outline"
+        onClick={() => {
+          setMsg('');
+          setUsername(user.username ?? '');
+          setRole(user.role ?? 'USER');
+          setOpen(true);
+        }}
+      >
+        Edit
+      </Button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit New User</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 py-2">
+            <div className="flex flex-col gap-1">
+              <Label>Username</Label>
+              <Input value={username} onChange={(e) => setUsername(e.target.value)} />
+            </div>
+            <div className="flex flex-col gap-1">
+              <Label>Role</Label>
+              <Select value={role} onValueChange={setRole}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="USER">USER</SelectItem>
+                  <SelectItem value="ADMIN">ADMIN</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {msg && <p className="text-sm text-red-500">{msg}</p>}
           </div>
-          <div className="flex flex-col gap-1">
-            <Label>Role</Label>
-            <Select value={role} onValueChange={setRole}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select role" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="USER">USER</SelectItem>
-                <SelectItem value="ADMIN">ADMIN</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          {error && <p className="text-sm text-red-500">{error}</p>}
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit}>Save</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSubmit}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

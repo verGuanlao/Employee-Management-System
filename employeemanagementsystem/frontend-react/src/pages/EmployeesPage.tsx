@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import AddEmployeeDialog from '@/components/AddEmployeeDialog';
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   fetchEmployees,
   fetchDepartments,
@@ -17,6 +17,7 @@ import {
 import EditEmployeeDialog from '@/components/EditEmployeeDialog';
 import DeleteEmployeeDialog from '@/components/DeleteEmployeeDialog';
 import { format } from 'date-fns';
+import { toast } from 'sonner';
 
 const EmployeesPage = () => {
   const [employees, setEmployees] = useState<EmployeeDTO[]>([]);
@@ -36,12 +37,16 @@ const EmployeesPage = () => {
         page: 0,
         size: 50,
       });
-      if (res.status === 'success') setDepartments(res.data.content);
+      if (res.status === 'success') {
+        setDepartments(res.data.content);
+      } else {
+        toast.error(res.message ?? 'Failed to load departments');
+      }
     }
     loadDepartments();
   }, []);
 
-  const loadEmployees = async () => {
+  const loadEmployees = useCallback(async () => {
     const params: any = { page, size: 5 };
     if (selectedDept) params.deptId = selectedDept;
     if (minAge !== null) params.minAge = minAge;
@@ -54,6 +59,8 @@ const EmployeesPage = () => {
         setTotalCount(res.data.employees.totalElements);
         setTotalPages(res.data.employees.totalPages);
         setStats(null);
+      } else {
+        toast.error(res.message ?? 'Failed to search employees');
       }
     } else {
       const res: ApiResponse<EmployeeStatsResponse> = await fetchEmployees(params);
@@ -66,14 +73,15 @@ const EmployeesPage = () => {
         });
         setTotalCount(res.data.employees.totalElements);
         setTotalPages(res.data.employees.totalPages);
+      } else {
+        toast.error(res.message ?? 'Failed to fetch employees');
       }
     }
-  };
+  }, [selectedDept, minAge, maxAge, page, searchTerm]);
 
-  // effect just calls it
   useEffect(() => {
     loadEmployees();
-  }, [selectedDept, minAge, maxAge, page, searchTerm]);
+  }, [loadEmployees]);
 
   const resetFilters = () => {
     setSelectedDept(null);
@@ -146,7 +154,10 @@ const EmployeesPage = () => {
               >
                 <option value="">All Departments</option>
                 {departments.map((dept) => (
-                  <option key={dept.departmentId} value={dept.departmentId}>
+                  <option
+                    key={dept.departmentId}
+                    value={dept.departmentName ? dept.departmentName : ''}
+                  >
                     {dept.departmentName}
                   </option>
                 ))}

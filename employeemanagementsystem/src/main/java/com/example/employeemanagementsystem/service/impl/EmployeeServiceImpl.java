@@ -3,9 +3,7 @@ package com.example.employeemanagementsystem.service.impl;
 import com.example.employeemanagementsystem.dto.DepartmentDTO;
 import com.example.employeemanagementsystem.dto.EmployeeDTO;
 import com.example.employeemanagementsystem.dto.EmployeeStatsResponse;
-import com.example.employeemanagementsystem.exception.EmployeeNotFoundException;
-import com.example.employeemanagementsystem.exception.ImproperAgeException;
-import com.example.employeemanagementsystem.exception.NonPositiveSalaryException;
+import com.example.employeemanagementsystem.exception.*;
 import com.example.employeemanagementsystem.model.Department;
 import com.example.employeemanagementsystem.model.Employee;
 import com.example.employeemanagementsystem.repository.EmployeeRepository;
@@ -34,10 +32,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     // check validations
     enum ValidationRule {
-        CHECK_MISSING_FIELDS,
-        CHECK_EXISTS,
+        CHECK_EMPLOYEE_ID,
+        CHECK_NAME,
+        CHECK_DEPARTMENT,
+        CHECK_BIRTHDATE,
+        CHECK_SALARY,
         CHECK_AGE,
-        CHECK_SALARY
+        CHECK_EXISTS,
     }
 
     // Calculates if the given date is of age 18 and above
@@ -76,20 +77,24 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     public EmployeeDTO addEmployee(EmployeeDTO employeeDTO) {
-        validateEmployee(employeeDTO, CHECK_MISSING_FIELDS, CHECK_AGE, CHECK_SALARY);
+        validateEmployee(employeeDTO,
+                CHECK_NAME, CHECK_DEPARTMENT, CHECK_BIRTHDATE, CHECK_SALARY,
+                CHECK_AGE);
         Employee newEmployee = employeeRepository.save(dtoToEntity(employeeDTO));
         return new EmployeeDTO(newEmployee);
     }
 
     public EmployeeDTO updateEmployee(EmployeeDTO employeeDTO) {
-        validateEmployee(employeeDTO, CHECK_MISSING_FIELDS, CHECK_EXISTS, CHECK_AGE, CHECK_SALARY);
+        validateEmployee(employeeDTO,
+                CHECK_EMPLOYEE_ID, CHECK_NAME, CHECK_DEPARTMENT, CHECK_BIRTHDATE, CHECK_SALARY,
+                CHECK_EXISTS, CHECK_AGE);
         Employee updatedEmployee = dtoToEntity(employeeDTO);
         updatedEmployee.setEmployeeId(employeeDTO.getEmployeeId());
         return new EmployeeDTO(employeeRepository.save(updatedEmployee));
     }
 
     public EmployeeDTO deleteEmployee(EmployeeDTO employeeDTO) {
-        validateEmployee(employeeDTO, CHECK_EXISTS);
+        validateEmployee(employeeDTO, CHECK_EMPLOYEE_ID, CHECK_EXISTS);
         Employee employee = employeeRepository.findById(employeeDTO.getEmployeeId()).get();
         employeeRepository.delete(employee);
         return new EmployeeDTO(employee);
@@ -137,8 +142,35 @@ public class EmployeeServiceImpl implements EmployeeService {
     private void validateEmployee(EmployeeDTO employeeDTO, ValidationRule... rules) {
         Set<ValidationRule> ruleSet = Set.of(rules);
 
-        if (ruleSet.contains(CHECK_MISSING_FIELDS) && employeeDTO.areFieldsMissing()) {
-            throw new EmployeeNotFoundException();
+        if (ruleSet.contains(CHECK_EMPLOYEE_ID) && employeeDTO.getEmployeeId() == null) {
+            throw new MissingFieldsException(MissingFieldsException.EMPLOYEE_ID);
+        }
+
+        if (ruleSet.contains(CHECK_NAME) &&
+                (employeeDTO.getName() == null || employeeDTO.getName().isBlank())) {
+            throw new MissingFieldsException(MissingFieldsException.EMPLOYEE_NAME);
+        }
+
+        if (ruleSet.contains(CHECK_DEPARTMENT)) {
+            if (employeeDTO.getDepartment() == null || employeeDTO.getDepartment().isBlank()) {
+                throw new MissingFieldsException(MissingFieldsException.EMPLOYEE_DEPARTMENT);
+            }
+            if (!departmentService.departmentExistsByName(employeeDTO.getDepartment())) {
+                throw new DepartmentNotFoundException(employeeDTO.getDepartment());
+            }
+        }
+
+        if (ruleSet.contains(CHECK_BIRTHDATE) && employeeDTO.getBirthDate() == null) {
+            throw new MissingFieldsException(MissingFieldsException.EMPLOYEE_BIRTHDATE);
+        }
+
+        if (ruleSet.contains(CHECK_SALARY)) {
+            if (employeeDTO.getSalary() == null) {
+                throw new MissingFieldsException(MissingFieldsException.EMPLOYEE_SALARY);
+            }
+            if (employeeDTO.getSalary().compareTo(BigDecimal.ZERO) <= 0) {
+                throw new NonPositiveSalaryException();
+            }
         }
 
         if (ruleSet.contains(CHECK_EXISTS)) {
@@ -149,10 +181,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         if (ruleSet.contains(CHECK_AGE) && !isAtLeast18(employeeDTO.getBirthDate())) {
             throw new ImproperAgeException();
-        }
-
-        if (ruleSet.contains(CHECK_SALARY) && employeeDTO.getSalary().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new NonPositiveSalaryException();
         }
     }
 }

@@ -5,6 +5,7 @@ import { searchDepartments, type DepartmentDTO, type Page, type ApiResponse } fr
 import AddDepartmentDialog from '@/components/AddDepartmentDialog';
 import EditDepartmentDialog from '@/components/EditDepartmentDialog';
 import DeleteDepartmentDialog from '@/components/DeleteDepartmentDialog';
+import { toast } from 'sonner';
 
 const DepartmentsPage = () => {
   const [departments, setDepartments] = useState<DepartmentDTO[]>([]);
@@ -22,14 +23,14 @@ const DepartmentsPage = () => {
       setDepartments(res.data.content);
       setTotalPages(res.data.totalPages);
     } else {
-      alert(res.message ?? 'Error loading departments');
+      toast.error(res.message ?? 'Error loading departments');
     }
   };
 
   useEffect(() => {
     const timeout = setTimeout(() => {
       loadDepartments();
-    }, 300); // debounce
+    }, 100); // debounce
     return () => clearTimeout(timeout);
   }, [searchQuery, page]);
 

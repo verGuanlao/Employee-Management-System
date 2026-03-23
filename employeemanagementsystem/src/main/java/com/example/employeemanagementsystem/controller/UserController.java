@@ -1,5 +1,6 @@
 package com.example.employeemanagementsystem.controller;
 
+import com.example.employeemanagementsystem.component.MessageHelper;
 import com.example.employeemanagementsystem.dto.ApiResponse;
 import com.example.employeemanagementsystem.dto.UserDTO;
 import com.example.employeemanagementsystem.service.UserService;
@@ -23,44 +24,36 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Page<UserDTO>>> getAllUsers(
             @RequestParam(required = false) String username, Pageable pageable) {
-
         Page<UserDTO> users = (username != null && !username.isBlank())
                 ? userService.findByUsernameContainingIgnoreCase(username, pageable)
                 : userService.findAllUsers(pageable);
-
         ApiResponse<Page<UserDTO>> response = ApiResponse.<Page<UserDTO>>builder()
                 .status("success")
-                .message("Users retrieved successfully")
+                .message(MessageHelper.get("success.user.fetched"))
                 .data(users)
                 .build();
-
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping()
+    @PatchMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<UserDTO>> updateUser(
-            @RequestBody UserDTO userDTO) {
-        UserDTO updatedUser = userService.updateUser(userDTO);
+    public ResponseEntity<ApiResponse<UserDTO>> updateUser(@RequestBody UserDTO userDTO) {
         ApiResponse<UserDTO> response = ApiResponse.<UserDTO>builder()
                 .status("success")
-                .message("User updated successfully")
-                .data(updatedUser)
+                .message(MessageHelper.get("success.user.updated"))
+                .data(userService.updateUser(userDTO))
                 .build();
-
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping()
+    @DeleteMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<UserDTO>> deleteUser(@RequestBody UserDTO userDTO) {
-        UserDTO deletedUser = userService.deleteUser(userDTO);
         ApiResponse<UserDTO> response = ApiResponse.<UserDTO>builder()
                 .status("success")
-                .message("User deleted successfully")
-                .data(deletedUser)
+                .message(MessageHelper.get("success.user.deleted"))
+                .data(userService.deleteUser(userDTO))
                 .build();
-
         return ResponseEntity.ok(response);
     }
 }

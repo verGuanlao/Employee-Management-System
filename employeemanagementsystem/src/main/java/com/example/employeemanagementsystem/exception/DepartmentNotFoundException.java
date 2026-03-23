@@ -1,11 +1,12 @@
 package com.example.employeemanagementsystem.exception;
 
+import com.example.employeemanagementsystem.component.MessageHelper;
+
 public class DepartmentNotFoundException extends RuntimeException {
     public DepartmentNotFoundException(Long id) {
-        super("Department with ID " + id + " not found");
+        super(MessageHelper.get("error.department.not.found.id", id));
     }
-
     public DepartmentNotFoundException(String name) {
-        super("Department with name " + name + " not found");
+        super(MessageHelper.get("error.department.not.found.name", name));
     }
 }

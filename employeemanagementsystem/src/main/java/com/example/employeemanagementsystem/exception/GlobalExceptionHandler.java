@@ -1,5 +1,6 @@
 package com.example.employeemanagementsystem.exception;
 
+import com.example.employeemanagementsystem.component.MessageHelper;
 import com.example.employeemanagementsystem.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ public class GlobalExceptionHandler {
                 .build();
         return new ResponseEntity<>(response, status);
     }
+
 
     @ExceptionHandler({
             EmployeeNotFoundException.class,
@@ -42,12 +44,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ApiResponse<Void>> handleBadCredentials(RuntimeException ex) {
+    public ResponseEntity<ApiResponse<Void>> handleBadCredentials(BadCredentialsException ex) {
         return buildErrorResponse(ex, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAccessDenied(RuntimeException ex) {
+    public ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException ex) {
         return buildErrorResponse(ex, HttpStatus.FORBIDDEN);
     }
 

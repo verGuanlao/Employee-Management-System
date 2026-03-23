@@ -18,7 +18,9 @@ import {
   type DepartmentDTO,
   type ApiResponse,
   type Page,
+  type EmployeeDTO,
 } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface Props {
   onUpdated?: () => void;
@@ -31,6 +33,7 @@ export default function AddEmployeeDialog({ onUpdated }: Props) {
   const [birthDate, setBirthDate] = useState<Date | undefined>(undefined);
   const [departments, setDepartments] = useState<DepartmentDTO[]>([]);
   const [selectedDept, setSelectedDept] = useState<string>('');
+  const [msg, setMsg] = useState('');
 
   // Calculate cutoff date for 18 years old
   const today = new Date();
@@ -44,40 +47,34 @@ export default function AddEmployeeDialog({ onUpdated }: Props) {
       });
       if (res.status === 'success') {
         setDepartments(res.data.content);
+      } else {
+        setMsg(res.message ?? 'Failed to load departments');
       }
     }
     loadDepartments();
   }, []);
 
   const handleSubmit = async () => {
-    if (!name || !birthDate || !salary || !selectedDept) {
-      alert('Please fill out all fields before saving.');
-      return;
-    }
-
-    if (salary <= 0) {
-      alert('Salary must be a positive number.');
-      return;
-    }
-
-    const birthDateString = format(birthDate, 'yyyy-MM-dd');
-
-    await addEmployee({
+    setMsg('');
+    const res: ApiResponse<EmployeeDTO> = await addEmployee({
       employeeId: null,
       name,
-      birthDate: birthDateString,
+      birthDate: birthDate ? format(birthDate, 'yyyy-MM-dd') : '',
       salary: Number(salary),
       department: selectedDept,
     });
 
-    // reset form
-    setName('');
-    setSalary('');
-    setBirthDate(undefined);
-    setSelectedDept('');
-    setIsOpen(false);
-
-    if (onUpdated) onUpdated();
+    if (res.status == 'success') {
+      setName('');
+      setSalary('');
+      setBirthDate(undefined);
+      setSelectedDept('');
+      setIsOpen(false);
+      if (onUpdated) onUpdated();
+      toast.success(res.message ?? 'Employee added successfully');
+    } else {
+      setMsg(res.message ?? 'Failed to add employee');
+    }
   };
 
   return (
@@ -113,7 +110,10 @@ export default function AddEmployeeDialog({ onUpdated }: Props) {
             >
               <option value="">Select Department</option>
               {departments.map((dept) => (
-                <option key={dept.departmentId} value={dept.departmentName}>
+                <option
+                  key={dept.departmentId}
+                  value={dept.departmentName ? dept.departmentName : ''}
+                >
                   {dept.departmentName}
                 </option>
               ))}
@@ -159,7 +159,7 @@ export default function AddEmployeeDialog({ onUpdated }: Props) {
             </Popover>
           </div>
         </form>
-
+        <div>{msg && <p className="text-sm text-red-500">{msg}</p>}</div>
         <DialogFooter>
           <Button onClick={handleSubmit}>Save</Button>
         </DialogFooter>

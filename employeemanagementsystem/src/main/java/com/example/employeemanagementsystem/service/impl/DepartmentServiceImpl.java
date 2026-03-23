@@ -33,6 +33,10 @@ public class DepartmentServiceImpl implements DepartmentService {
         CHECK_HAS_EMPLOYEES
     }
 
+    public boolean departmentExistsByName(String name) {
+        return departmentRepository.existsByDepartmentNameIgnoreCase(name);
+    }
+
     public DepartmentDTO getDepartmentName(Long id) {
         Department department = departmentRepository.findById(id).orElse(null);
         if (department == null) {
@@ -107,11 +111,11 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         if (ruleSet.contains(CHECK_NAME) &&
                 (departmentDTO.getDepartmentName() == null || departmentDTO.getDepartmentName().isBlank())) {
-            throw new MissingFieldsException("Department name cannot be empty");
+            throw new MissingFieldsException(MissingFieldsException.DEPARTMENT_NAME);
         }
 
         if (ruleSet.contains(CHECK_ID) && departmentDTO.getDepartmentId() == null) {
-            throw new MissingFieldsException("Department Id cannot be empty");
+            throw new MissingFieldsException(MissingFieldsException.DEPARTMENT_ID);
         }
 
         if (ruleSet.contains(CHECK_EXISTS)) {
@@ -119,9 +123,13 @@ public class DepartmentServiceImpl implements DepartmentService {
                     .orElseThrow(() -> new DepartmentNotFoundException(departmentDTO.getDepartmentId()));
         }
 
-        if (ruleSet.contains(CHECK_DUPLICATE_NAME) &&
-                departmentRepository.existsByDepartmentNameIgnoreCase(departmentDTO.getDepartmentName())) {
-            throw new DepartmentAlreadyExistsException(departmentDTO.getDepartmentName());
+        if (ruleSet.contains(CHECK_DUPLICATE_NAME)) {
+            Department existingDepartment = departmentRepository
+                    .findByDepartmentNameIgnoreCase(departmentDTO.getDepartmentName()).orElse(null);
+
+            if (existingDepartment != null && !existingDepartment.getDepartmentId().equals(departmentDTO.getDepartmentId())) {
+                throw new DepartmentAlreadyExistsException(departmentDTO.getDepartmentName());
+            }
         }
 
         if (ruleSet.contains(CHECK_HAS_EMPLOYEES) &&

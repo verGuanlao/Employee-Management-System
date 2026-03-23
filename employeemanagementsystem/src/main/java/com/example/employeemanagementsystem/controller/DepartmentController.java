@@ -1,5 +1,6 @@
 package com.example.employeemanagementsystem.controller;
 
+import com.example.employeemanagementsystem.component.MessageHelper;
 import com.example.employeemanagementsystem.dto.ApiResponse;
 import com.example.employeemanagementsystem.dto.DepartmentDTO;
 import com.example.employeemanagementsystem.dto.EmployeeDTO;
@@ -24,10 +25,9 @@ public class DepartmentController {
     public ResponseEntity<ApiResponse<Page<DepartmentDTO>>> getDepartments(Pageable pageable) {
         ApiResponse<Page<DepartmentDTO>> apiResponse = ApiResponse.<Page<DepartmentDTO>>builder()
                 .status("success")
-                .message("Departments fetched successfully")
+                .message(MessageHelper.get("success.department.fetched"))
                 .data(departmentService.getDepartments(pageable))
                 .build();
-
         return ResponseEntity.ok(apiResponse);
     }
 
@@ -36,10 +36,9 @@ public class DepartmentController {
             @RequestParam(required = false) String query, Pageable pageable) {
         ApiResponse<Page<DepartmentDTO>> apiResponse = ApiResponse.<Page<DepartmentDTO>>builder()
                 .status("success")
-                .message("Departments search successfully")
+                .message(MessageHelper.get("success.department.searched"))
                 .data(departmentService.getDepartmentsNameContainingIgnoreCase(query, pageable))
                 .build();
-
         return ResponseEntity.ok(apiResponse);
     }
 
@@ -48,9 +47,10 @@ public class DepartmentController {
     public ResponseEntity<ApiResponse<DepartmentDTO>> addDepartment(@RequestBody DepartmentDTO departmentDTO) {
         ApiResponse<DepartmentDTO> apiResponse = ApiResponse.<DepartmentDTO>builder()
                 .status("success")
-                .message("Department added successfully")
-                .data(departmentService.addDepartment(departmentDTO)).build();
-        return  ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+                .message(MessageHelper.get("success.department.added"))
+                .data(departmentService.addDepartment(departmentDTO))
+                .build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
     @PutMapping
@@ -58,9 +58,10 @@ public class DepartmentController {
     public ResponseEntity<ApiResponse<DepartmentDTO>> updateDepartment(@RequestBody DepartmentDTO departmentDTO) {
         ApiResponse<DepartmentDTO> apiResponse = ApiResponse.<DepartmentDTO>builder()
                 .status("success")
-                .message("Department updated successfully")
-                .data(departmentService.updateDepartment(departmentDTO)).build();
-        return  ResponseEntity.ok().body(apiResponse);
+                .message(MessageHelper.get("success.department.updated"))
+                .data(departmentService.updateDepartment(departmentDTO))
+                .build();
+        return ResponseEntity.ok().body(apiResponse);
     }
 
     @DeleteMapping
@@ -68,8 +69,9 @@ public class DepartmentController {
     public ResponseEntity<ApiResponse<DepartmentDTO>> deleteDepartment(@RequestBody DepartmentDTO departmentDTO) {
         ApiResponse<DepartmentDTO> apiResponse = ApiResponse.<DepartmentDTO>builder()
                 .status("success")
-                .message("Department deleted successfully")
-                .data(departmentService.deleteDepartment(departmentDTO)).build();
-        return  ResponseEntity.ok().body(apiResponse);
+                .message(MessageHelper.get("success.department.deleted"))
+                .data(departmentService.deleteDepartment(departmentDTO))
+                .build();
+        return ResponseEntity.ok().body(apiResponse);
     }
 }

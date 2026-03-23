@@ -1,5 +1,6 @@
 package com.example.employeemanagementsystem.controller.auth;
 
+import com.example.employeemanagementsystem.component.MessageHelper;
 import com.example.employeemanagementsystem.dto.ApiResponse;
 import com.example.employeemanagementsystem.dto.UserDTO;
 import com.example.employeemanagementsystem.model.User;
@@ -28,15 +29,13 @@ public class AuthController {
     @PostMapping("/register")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<UserDTO>> registerUser(@RequestBody UserDTO userDTO) {
-        UserDTO registeredUser = userService.registerUser(userDTO);
         ApiResponse<UserDTO> apiResponse = ApiResponse.<UserDTO>builder()
                 .status("success")
-                .message("Login successfully")
-                .data(registeredUser)
+                .message(MessageHelper.get("success.auth.registered"))
+                .data(userService.registerUser(userDTO))
                 .build();
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
-
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<UserDTO>> login(@RequestBody UserDTO request) {
@@ -48,8 +47,8 @@ public class AuthController {
 
         ApiResponse<UserDTO> apiResponse = ApiResponse.<UserDTO>builder()
                 .status("success")
-                .message("Login successfully")
-                .data(new UserDTO(validatedUser.getUserId(), validatedUser.getUsername(), "",validatedUser.getRole()))
+                .message(MessageHelper.get("success.auth.login"))
+                .data(new UserDTO(validatedUser.getUserId(), validatedUser.getUsername(), "", validatedUser.getRole()))
                 .build();
 
         return ResponseEntity.ok()
