@@ -100,19 +100,24 @@ const EmployeesPage = () => {
 
   return (
     <DashboardLayout page={page} totalPages={totalPages} onPageChange={setPage}>
-      <Button
-        variant="outline"
-        onClick={() =>
-          exportEmployeesToPDF({
-            department: departments.find((d) => d.departmentId === selectedDept)?.departmentName,
-            departmentId: selectedDept,
-            minAge,
-            maxAge,
-          })
-        }
-      >
-        Export PDF
-      </Button>
+      <div className="mb-4 flex justify-end">
+        {stats && (
+          <Button
+            variant="outline"
+            onClick={() =>
+              exportEmployeesToPDF({
+                department: departments.find((d) => d.departmentId === selectedDept)
+                  ?.departmentName,
+                departmentId: selectedDept,
+                minAge,
+                maxAge,
+              })
+            }
+          >
+            Export PDF
+          </Button>
+        )}
+      </div>
       {/* Stats */}
       {stats && (
         <div className="mb-6 grid grid-cols-3 gap-4">
@@ -162,8 +167,21 @@ const EmployeesPage = () => {
         </CardHeader>
         <CardContent>
           {/* Filters + Search */}
-          <div className="mb-4 grid grid-cols-6 items-end gap-4">
-            <div>
+          <div className="mb-4 grid grid-cols-12 items-end gap-4">
+            <div className="col-span-3">
+              <label className="mb-2 block font-medium">Search Employee</label>
+              <input
+                type="text"
+                className="w-full rounded border p-2"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setPage(0);
+                }}
+                placeholder="Enter name"
+              />
+            </div>
+            <div className="col-span-3">
               <label className="mb-2 block font-medium">Department</label>
               <select
                 className="w-full rounded border p-2"
@@ -211,25 +229,12 @@ const EmployeesPage = () => {
               </HoverCardContent>
             </HoverCard>
 
-            <div>
-              <label className="mb-2 block font-medium">Search Employee</label>
-              <input
-                type="text"
-                className="w-full rounded border p-2"
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setPage(0);
-                }}
-                placeholder="Enter name or ID..."
-              />
-            </div>
-            <div>
+            <div className="col-span-2">
               <Button variant="outline" className="w-full" onClick={resetFilters}>
                 Reset Filters
               </Button>
             </div>
-            <div>
+            <div className="col-span-2">
               <Button
                 variant="secondary"
                 className="w-full"
