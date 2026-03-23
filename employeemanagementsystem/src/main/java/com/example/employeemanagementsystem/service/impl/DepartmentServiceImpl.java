@@ -134,7 +134,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         if (ruleSet.contains(CHECK_HAS_EMPLOYEES) &&
                 employeeRepository.existsByDepartmentDepartmentId(departmentDTO.getDepartmentId())) {
-            throw new InvalidDepartmentDeleteException(departmentDTO.getDepartmentId());
+            throw new InvalidDepartmentDeleteException(departmentDTO.getDepartmentName());
         }
     }
 }
