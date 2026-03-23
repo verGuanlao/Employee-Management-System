@@ -19,12 +19,17 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { set } from 'date-fns';
+import { getUsername } from '@/auth/tokenUtils';
+import { toast } from 'sonner';
 
 const EditUserDialog = ({ user, onUpdated }: { user: UserDTO; onUpdated: () => void }) => {
   const [open, setOpen] = useState(false);
   const [username, setUsername] = useState(user.username);
   const [role, setRole] = useState(user.role);
   const [msg, setMsg] = useState('');
+
+  const currentUsername = getUsername();
+  const isSelf = currentUsername === user.username;
 
   const handleSubmit = async () => {
     setMsg('');
@@ -37,6 +42,7 @@ const EditUserDialog = ({ user, onUpdated }: { user: UserDTO; onUpdated: () => v
     if (res.status === 'success') {
       setOpen(false);
       onUpdated();
+      toast.success(res.message ?? 'User updated successfully');
     } else {
       setMsg(res.message ?? 'Failed to update user');
     }
@@ -67,7 +73,7 @@ const EditUserDialog = ({ user, onUpdated }: { user: UserDTO; onUpdated: () => v
             </div>
             <div className="flex flex-col gap-1">
               <Label>Role</Label>
-              <Select value={role} onValueChange={setRole}>
+              <Select value={role} onValueChange={setRole} disabled={isSelf}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select role" />
                 </SelectTrigger>

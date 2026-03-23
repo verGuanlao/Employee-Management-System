@@ -41,7 +41,7 @@ const DepartmentsPage = () => {
       <Card>
         <CardHeader className="flex items-center justify-between">
           <CardTitle>Department List</CardTitle>
-          <AddDepartmentDialog onAdded={loadDepartments} />
+          {role === 'ADMIN' && <AddDepartmentDialog onAdded={loadDepartments} />}
         </CardHeader>
         <CardContent>
           <div className="mb-4">

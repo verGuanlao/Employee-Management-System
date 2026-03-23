@@ -10,10 +10,13 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { getUsername } from '@/auth/tokenUtils';
 
 const DeleteUserDialog = ({ user, onDeleted }: { user: UserDTO; onDeleted: () => void }) => {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState('');
+  const currentUsername = getUsername();
+  const isSelf = currentUsername === user.username;
 
   const handleDelete = async () => {
     setError('');
@@ -50,7 +53,7 @@ const DeleteUserDialog = ({ user, onDeleted }: { user: UserDTO; onDeleted: () =>
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button variant="destructive" onClick={handleDelete}>
+          <Button variant="destructive" onClick={handleDelete} disabled={isSelf}>
             Delete
           </Button>
         </DialogFooter>

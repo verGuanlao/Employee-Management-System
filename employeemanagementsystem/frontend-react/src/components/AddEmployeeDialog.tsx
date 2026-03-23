@@ -21,6 +21,7 @@ import {
   type EmployeeDTO,
 } from '@/lib/utils';
 import { toast } from 'sonner';
+import { ms } from 'date-fns/locale';
 
 interface Props {
   onUpdated?: () => void;
@@ -80,7 +81,14 @@ export default function AddEmployeeDialog({ onUpdated }: Props) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button onClick={() => setIsOpen(true)}>+</Button>
+        <Button
+          onClick={() => {
+            setMsg('');
+            setIsOpen(true);
+          }}
+        >
+          +
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
