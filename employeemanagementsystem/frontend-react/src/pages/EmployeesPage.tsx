@@ -13,6 +13,8 @@ import {
   type ApiResponse,
   type EmployeeStatsResponse,
   type Page,
+  exportEmployeesToPDF,
+  calculateAge,
 } from '@/lib/utils';
 import EditEmployeeDialog from '@/components/EditEmployeeDialog';
 import DeleteEmployeeDialog from '@/components/DeleteEmployeeDialog';
@@ -98,6 +100,19 @@ const EmployeesPage = () => {
 
   return (
     <DashboardLayout page={page} totalPages={totalPages} onPageChange={setPage}>
+      <Button
+        variant="outline"
+        onClick={() =>
+          exportEmployeesToPDF({
+            department: departments.find((d) => d.departmentId === selectedDept)?.departmentName,
+            departmentId: selectedDept,
+            minAge,
+            maxAge,
+          })
+        }
+      >
+        Export PDF
+      </Button>
       {/* Stats */}
       {stats && (
         <div className="mb-6 grid grid-cols-3 gap-4">
@@ -166,7 +181,7 @@ const EmployeesPage = () => {
                 ))}
               </select>
             </div>
-            <HoverCard open={minAge !== null && maxAge !== null && minAge >= maxAge}>
+            <HoverCard open={minAge !== null && maxAge !== null && minAge > maxAge}>
               <HoverCardTrigger asChild>
                 <div className="col-span-2 flex gap-4">
                   <div className="flex-1">
@@ -230,11 +245,12 @@ const EmployeesPage = () => {
 
           <div className="w-full">
             {/* Table Header */}
-            <div className="grid grid-cols-6 gap-4 border-b bg-gray-100 px-3 py-2 font-semibold">
+            <div className="grid grid-cols-7 gap-4 border-b bg-gray-100 px-3 py-2 font-semibold">
               <div className="truncate">Employee ID</div>
               <div className="truncate">Name</div>
               <div className="truncate">Department</div>
               <div className="truncate">Birthdate</div>
+              <div className="truncate">Age</div>
               <div className="truncate">Salary</div>
               <div className="mr-3 flex justify-end pr-6">Actions</div>
             </div>
@@ -242,13 +258,14 @@ const EmployeesPage = () => {
             {/* Table Body */}
             <div className="divide-y">
               {employees.map((emp) => (
-                <div key={emp.employeeId} className="grid grid-cols-6 items-center gap-4 px-4 py-2">
+                <div key={emp.employeeId} className="grid grid-cols-7 items-center gap-4 px-4 py-2">
                   <div className="truncate">{emp.employeeId}</div>
                   <div className="truncate font-medium">{emp.name}</div>
-                  <div className="truncate text-gray-500">{emp.department}</div>
+                  <div className="truncate">{emp.department}</div>
                   <div className="truncate">
                     {emp.birthDate ? format(new Date(emp.birthDate), 'MM-dd-yy') : '-'}
                   </div>
+                  <div className="truncate">{calculateAge(emp.birthDate)}</div>
                   <div className="truncate">₱{emp.salary.toLocaleString()}</div>
                   <div className="flex justify-end gap-2">
                     <EditEmployeeDialog

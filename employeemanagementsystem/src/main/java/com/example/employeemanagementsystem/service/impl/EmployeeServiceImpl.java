@@ -107,7 +107,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
             LocalDate now = LocalDate.now();
-            LocalDate minBirthDate = (maxAge != null) ? now.minusYears(maxAge) : null;
+            LocalDate minBirthDate = (maxAge != null) ? now.minusYears(maxAge + 1).plusDays(1) : null;
             LocalDate maxBirthDate = (minAge != null) ? now.minusYears(minAge) : null;
 
             // page, avgSalary, and avgAge calculation adaptation if some values are null
