@@ -44,6 +44,12 @@ const EmployeesPage = () => {
       }
     }
     loadDepartments();
+    // Get redirect message when new login
+    const message = sessionStorage.getItem('redirectMessage');
+    if (message) {
+      toast.success(message);
+      sessionStorage.removeItem('redirectMessage');
+    }
   }, []);
 
   const loadEmployees = useCallback(async () => {

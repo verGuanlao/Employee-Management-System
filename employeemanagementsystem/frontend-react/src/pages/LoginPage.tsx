@@ -1,10 +1,11 @@
 // src/pages/LoginPage.tsx
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { login } from '@/lib/utils';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -16,11 +17,20 @@ export default function LoginPage() {
     setMsg('');
     const res = await login(username, password);
     if (res.status === 'success') {
+      sessionStorage.setItem('redirectMessage', res.message);
       window.location.href = '/employees';
     } else {
       setMsg(res.message ?? 'Invalid credentials');
     }
   };
+
+  useEffect(() => {
+    const message = sessionStorage.getItem('redirectMessage');
+    if (message) {
+      toast.error(message);
+      sessionStorage.removeItem('redirectMessage');
+    }
+  }, []);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">

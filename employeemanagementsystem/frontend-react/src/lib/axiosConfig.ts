@@ -1,4 +1,4 @@
-// src/api/axiosConfig.ts
+import { API_BASE_URL } from '@/config/apiConfig';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
@@ -8,7 +8,7 @@ interface JwtPayload {
   role?: string;
 }
 
-export const getToken = () => localStorage.getItem('token');
+export const getToken = () => localStorage.getItem('accessToken');
 
 export const isTokenValid = (): boolean => {
   const token = getToken();
@@ -33,7 +33,7 @@ export const getCurrentUser = (): JwtPayload | null => {
 };
 
 const api = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL: API_BASE_URL,
 });
 
 // Attach token to every request
@@ -44,5 +44,18 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
+// Catch if token is expired
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 403) {
+      localStorage.removeItem('accessToken');
+      sessionStorage.setItem('redirectMessage', 'Session expired. Please log in again.');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default api;

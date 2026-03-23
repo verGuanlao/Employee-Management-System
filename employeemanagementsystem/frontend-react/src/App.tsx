@@ -1,11 +1,10 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import EmployeesPage from './pages/EmployeesPage';
 import DepartmentsPage from './pages/DepartmentsPage';
 import LoginPage from './pages/LoginPage';
 import UsersPage from './pages/UsersPage';
 import ProtectedRoute from './auth/ProtectedRoute';
 import UnauthorizedPage from './pages/UnauthorizedPage';
-import { Toaster } from '@/components/ui/sonner';
 
 export function App() {
   return (
@@ -43,7 +42,6 @@ export function App() {
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
         </Routes>
       </BrowserRouter>
-      <Toaster richColors position="bottom-right" />
     </>
   );
 }
